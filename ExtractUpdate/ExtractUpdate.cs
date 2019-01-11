@@ -1,15 +1,20 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Compression;
 using System.Threading;
 
-namespace Updater.core
+namespace ExtractUpdate
 {
-	class Program
+	class ExtractUpdate
 	{
-		public const string updateArchive = "update.zip";
-
 		static void Main(string[] args)
 		{
+			if(0 == args.Length)
+			{
+				Console.WriteLine("Argument archive file name missing.");
+				return;
+			}
+			var updateArchive = args[1];
 			if (!File.Exists(updateArchive)) return;
 			using (var file = File.OpenRead(updateArchive))
 			{
@@ -44,11 +49,6 @@ namespace Updater.core
 					}
 				}
 			}
-			Cleanup();
-		}
-
-		private static void Cleanup()
-		{
 			//cleanup
 			try
 			{

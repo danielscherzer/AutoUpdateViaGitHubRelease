@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHubReleaseUpdater", "GitHubReleaseUpdater\GitHubReleaseUpdater.csproj", "{8537E183-6DB6-49D4-8F85-E309DF0DB84F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Updater", "Updater\Updater.csproj", "{03D14561-3345-4A1D-B988-F879A3E548C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExtractUpdate", "ExtractUpdate\ExtractUpdate.csproj", "{03D14561-3345-4A1D-B988-F879A3E548C5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitHubLatestRelease", "GitHubLatestRelease\GitHubLatestRelease.csproj", "{12212521-A129-41AE-B5C8-2373754BD5E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{03D14561-3345-4A1D-B988-F879A3E548C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03D14561-3345-4A1D-B988-F879A3E548C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03D14561-3345-4A1D-B988-F879A3E548C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12212521-A129-41AE-B5C8-2373754BD5E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12212521-A129-41AE-B5C8-2373754BD5E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12212521-A129-41AE-B5C8-2373754BD5E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12212521-A129-41AE-B5C8-2373754BD5E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
