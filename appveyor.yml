@@ -9,6 +9,17 @@ assembly_info:
   assembly_file_version: "{version}"
   assembly_informational_version: "{version}"
 
+
+# enable patching of dot net core/standard *.csproj files with APPVEYOR version
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}'
+  package_version: '{version}'
+  assembly_version: '{version}'
+  file_version: '{version}'
+  informational_version: '{version}'
+
 image: Visual Studio 2017
 
 configuration:
@@ -21,7 +32,7 @@ build:
   verbosity: minimal              # MSBuild verbosity level
 
 artifacts:
-- path: ExtractUpdate\bin\$(configuration)
+- path: ExtractUpdate\bin\$(configuration)\**\*.*
   name: ExtractUpdate
 
 deploy:
