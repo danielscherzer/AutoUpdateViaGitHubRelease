@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommandLine;
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Threading;
@@ -9,25 +10,33 @@ namespace ExtractUpdate
 	{
 		static void Main(string[] args)
 		{
-			if(0 == args.Length)
+			try
 			{
-				Console.WriteLine("Argument archive file name missing.");
-				return;
+				Parser.Default.ParseArguments<Options>(args).WithParsed(options => Update(options));
 			}
-			var updateArchive = args[1];
-			if (!File.Exists(updateArchive)) return;
-			using (var file = File.OpenRead(updateArchive))
+			catch (Exception e)
+			{
+				Console.WriteLine(e.ToString());
+			}
+		}
+
+		private static void Update(Options options)
+		{
+			if (!File.Exists(options.UpdateDataArchive)) throw new FileNotFoundException(options.UpdateDataArchive);
+			if (!Directory.Exists(options.ApplicationDir)) throw new DirectoryNotFoundException(options.ApplicationDir);
+			using (var file = File.OpenRead(options.UpdateDataArchive))
 			{
 				using (var zip = new ZipArchive(file, ZipArchiveMode.Read))
 				{
 					foreach (var entry in zip.Entries)
 					{
+						var destinationFile = Path.Combine(options.ApplicationDir, entry.FullName);
 						for (var i = 0; i < 10; ++i)
 						{
 							try
 							{
 								// try to delete
-								File.Delete(entry.FullName);
+								File.Delete(destinationFile);
 								// successful, so we can write new version
 								break;
 							}
@@ -39,7 +48,7 @@ namespace ExtractUpdate
 						}
 						try
 						{
-							entry.ExtractToFile(entry.FullName);
+							entry.ExtractToFile(destinationFile);
 						}
 						catch
 						{
@@ -52,7 +61,7 @@ namespace ExtractUpdate
 			//cleanup
 			try
 			{
-				File.Delete(updateArchive);
+				File.Delete(options.UpdateDataArchive);
 			}
 			catch { }
 		}

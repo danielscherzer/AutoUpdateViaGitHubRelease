@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace GitHubLatestRelease
@@ -19,22 +20,45 @@ namespace GitHubLatestRelease
 			//ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 		}
 
-		public async Task<bool> DownloadNewVersion(string user, string repository, Version currentVersion, string updateArchiveFilePath)
+		public async Task Update(string user, string repository)
+		{
+			var assembly = Assembly.GetEntryAssembly();
+			var currentVersion = assembly.GetName().Version;
+			var latestVersionJson = await GetLatestVersionJSONAsync(user, repository);
+			var newVersion = new Version(latestVersionJson["name"].ToObject<string>());
+			if (newVersion > currentVersion)
+			{
+				var updateDataArchive = Path.Combine(Path.GetTempPath(), "update.zip");
+				using (var stream = await client.GetStreamAsync(DownloadUrl(latestVersionJson)))
+				{
+					using (var file = new FileStream(updateDataArchive, FileMode.Create))
+					{
+						stream.CopyTo(file);
+					}
+				}
+				var updateToolDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+				Directory.CreateDirectory(updateToolDir);
+				var urlUpdateExtract = DownloadUrl(await GetLatestVersionJSONAsync("danielScherzer", "GitHubReleaseUpdater"));
+				await DownloadExtract(urlUpdateExtract, updateToolDir);
+				var updateTool = Path.Combine(updateToolDir, "ExtractUpdate.dll");
+				var destinationDir = Path.GetDirectoryName(assembly.Location);
+				Run($"'{updateTool}' '{updateDataArchive}' '{destinationDir}'");
+			}
+		}
+
+		public async Task<bool> DownloadNewVersion(string user, string repository, Version currentVersion, string updateTempDir)
 		{
 			var latestVersionJson = await GetLatestVersionJSONAsync(user, repository);
 			var version = new Version(latestVersionJson["name"].ToObject<string>());
 			if (version > currentVersion)
 			{
 				//new version download
-				var updateDirectory = Path.GetDirectoryName(updateArchiveFilePath);
-				var updateDataDirectory = Path.Combine(updateDirectory, "data");
+				var updateDataDirectory = Path.Combine(updateTempDir, "data");
 				Directory.CreateDirectory(updateDataDirectory);
-				//await DownloadToFile(DownloadUrl(latestVersionJson), updateArchiveFilePath);
 				await DownloadExtract(DownloadUrl(latestVersionJson), updateDataDirectory);
 				//Get UpdateExtract assembly
 				var urlUpdateExtract = DownloadUrl(await GetLatestVersionJSONAsync("danielScherzer", "GitHubReleaseUpdater"));
-				//var updateExtract = Path.Combine(updateDirectory, "updateExtract.zip");
-				await DownloadExtract(urlUpdateExtract, updateDirectory);
+				await DownloadExtract(urlUpdateExtract, updateTempDir);
 				return true;
 			}
 			return false;
@@ -48,24 +72,15 @@ namespace GitHubLatestRelease
 			}
 		}
 
-		public async Task DownloadToFile(string downloadUrl, string filePath)
-		{
-			using (var file = new FileStream(filePath, FileMode.Create))
-			{
-				var stream = await Download(downloadUrl);
-				//save download
-				stream.CopyTo(file);
-			}
-		}
-
-		public void Update()
+		public void Run(string dotNetAssemblyPath)
 		{
 			var process = new Process
 			{
 				StartInfo = new ProcessStartInfo
 				{
 					FileName = "dotnet",
-					Arguments = "updater.dll",
+					Arguments = dotNetAssemblyPath,
+					WorkingDirectory = Path.GetDirectoryName(dotNetAssemblyPath),
 					UseShellExecute = true,
 					RedirectStandardOutput = false,
 					RedirectStandardError = false,
@@ -74,8 +89,6 @@ namespace GitHubLatestRelease
 			};
 			process.Start();
 		}
-
-		public async Task<Stream> Download(string url) => await client.GetStreamAsync(url);
 
 		private HttpClient client = new HttpClient();
 
