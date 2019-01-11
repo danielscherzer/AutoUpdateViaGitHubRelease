@@ -32,7 +32,7 @@ build:
   verbosity: minimal              # MSBuild verbosity level
 
 artifacts:
-- path: ExtractUpdate\bin\$(configuration)
+- path: ExtractUpdate\$(outDir)
   name: ExtractUpdate
 
 deploy:
