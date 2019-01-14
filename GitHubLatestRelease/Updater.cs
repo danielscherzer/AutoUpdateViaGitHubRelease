@@ -42,8 +42,9 @@ namespace GitHubLatestRelease
 				await DownloadExtract(urlUpdateExtract, updateToolDir);
 				var updateTool = Path.Combine(updateToolDir, "ExtractUpdate.dll");
 				var destinationDir = Path.GetDirectoryName(assembly.Location);
-				string Quote(string input) => $"\"{input}\"";
-				Run($"{Quote(updateTool)} {Quote(updateDataArchive)} {Quote(destinationDir)}");
+				//string Quote(string input) => $"\"{input}\"";
+				string Quote(string input) => input;
+				Run($"{Quote(updateTool)}", $"{Quote(updateDataArchive)} {Quote(destinationDir)}");
 			}
 		}
 
@@ -73,14 +74,14 @@ namespace GitHubLatestRelease
 			}
 		}
 
-		public void Run(string dotNetAssemblyPath)
+		public void Run(string dotNetAssemblyPath, string parameters)
 		{
 			var process = new Process
 			{
 				StartInfo = new ProcessStartInfo
 				{
 					FileName = "dotnet",
-					Arguments = dotNetAssemblyPath,
+					Arguments = $"{dotNetAssemblyPath} {parameters}",
 					WorkingDirectory = Path.GetDirectoryName(dotNetAssemblyPath),
 					UseShellExecute = true,
 					RedirectStandardOutput = false,
