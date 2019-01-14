@@ -26,7 +26,7 @@ build:
 artifacts:
 - path: UpdateWindow\bin\$(configuration)\UpdateWindow.exe
   name: UpdateWindow
-- path: Example\bin\$(configuration)\UpdateWindow.exe
+- path: Example\bin\$(configuration)
   name: Example
 
 deploy:
