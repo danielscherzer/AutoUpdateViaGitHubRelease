@@ -1,37 +1,53 @@
-﻿using CommandLine;
-using System;
+﻿using System;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Threading;
+using System.Windows;
 
-namespace ExtractUpdate
+namespace UpdateWindow
 {
-	class ExtractUpdate
+	/// <summary>
+	/// Interaction logic for MainWindow.xaml
+	/// </summary>
+	public partial class MainWindow : Window
 	{
-		private static string logFileName;
+		private string logFileName;
 
-		static void Main(string[] args)
+		public MainWindow()
+		{
+			InitializeComponent();
+		}
+
+		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			logFileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "logfile.txt");
 			try
 			{
-				Parser.Default.ParseArguments<Options>(args).WithParsed(options => Update(options));
+				var args = Environment.GetCommandLineArgs();
+				if(3 != args.Length)
+				{
+					Log($"Usage: {nameof(UpdateWindow)} <{nameof(Options.UpdateDataArchive)}> <{nameof(Options.ApplicationDir)}>");
+					return;
+				}
+				var options = new Options { UpdateDataArchive = args[1], ApplicationDir = args[2] };
+				Update(options);
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				Log(e.ToString());
+				Log(ex.ToString());
 			}
 		}
 
-		private static void Log(string message)
+		private void Log(string message)
 		{
-			//Console.WriteLine(message);
 			var time = DateTime.Now.ToLongTimeString();
-			File.AppendAllText(logFileName, $"{time}: {message}{Environment.NewLine}");
+			var entry = $"{time}: {message}{Environment.NewLine}";
+			File.AppendAllText(logFileName, entry);
+			log.AppendText(entry);
 		}
 
-		private static void Update(Options options)
+		private void Update(Options options)
 		{
 			if (!File.Exists(options.UpdateDataArchive)) throw new FileNotFoundException(options.UpdateDataArchive);
 			if (!Directory.Exists(options.ApplicationDir)) throw new DirectoryNotFoundException(options.ApplicationDir);
@@ -72,13 +88,6 @@ namespace ExtractUpdate
 					}
 				}
 			}
-			//cleanup
-			try
-			{
-				Log($"Cleanup...");
-				//File.Delete(options.UpdateDataArchive);
-			}
-			catch { Log($"Error cleanup"); }
 			Log($"Update Finished");
 		}
 	}

@@ -74,19 +74,17 @@ namespace GitHubLatestRelease
 			}
 		}
 
-		public void Run(string dotNetAssemblyPath, string parameters)
+		public void Run(string executablePath, string parameters)
 		{
 			var process = new Process
 			{
 				StartInfo = new ProcessStartInfo
 				{
-					FileName = "dotnet",
-					Arguments = $"{dotNetAssemblyPath} {parameters}",
-					WorkingDirectory = Path.GetDirectoryName(dotNetAssemblyPath),
-					UseShellExecute = true,
+					FileName = executablePath,
+					Arguments = parameters,
+					WorkingDirectory = Path.GetDirectoryName(executablePath),
 					RedirectStandardOutput = false,
 					RedirectStandardError = false,
-					CreateNoWindow = true
 				}
 			};
 			process.Start();
