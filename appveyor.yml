@@ -26,6 +26,8 @@ build:
 artifacts:
 - path: UpdateWindow\bin\$(configuration)\UpdateWindow.exe
   name: UpdateWindow
+- path: Example\bin\$(configuration)\UpdateWindow.exe
+  name: Example
 
 deploy:
   release: $(appveyor_build_version)

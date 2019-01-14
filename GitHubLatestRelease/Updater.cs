@@ -29,22 +29,25 @@ namespace GitHubLatestRelease
 			if (newVersion > currentVersion)
 			{
 				var updateDataArchive = Path.Combine(Path.GetTempPath(), "update.zip");
-				using (var stream = await client.GetStreamAsync(DownloadUrl(latestVersionJson)))
-				{
-					using (var file = new FileStream(updateDataArchive, FileMode.Create))
-					{
-						stream.CopyTo(file);
-					}
-				}
-				var updateToolDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-				Directory.CreateDirectory(updateToolDir);
-				var urlUpdateExtract = DownloadUrl(await GetLatestVersionJSONAsync("danielScherzer", "GitHubReleaseUpdater"));
-				await DownloadExtract(urlUpdateExtract, updateToolDir);
-				var updateTool = Path.Combine(updateToolDir, "ExtractUpdate.dll");
+				await DownloadFile(DownloadUrl(latestVersionJson), updateDataArchive);
+				var urlUpdateWindow = DownloadUrl(await GetLatestVersionJSONAsync("danielScherzer", "GitHubReleaseUpdater"));
+				var updateTool = Path.Combine(Path.GetTempPath(), Path.GetFileName(urlUpdateWindow));
+				await DownloadFile(urlUpdateWindow, updateTool);
 				var destinationDir = Path.GetDirectoryName(assembly.Location);
 				//string Quote(string input) => $"\"{input}\"";
 				string Quote(string input) => input;
 				Run($"{Quote(updateTool)}", $"{Quote(updateDataArchive)} {Quote(destinationDir)}");
+			}
+		}
+
+		private async Task DownloadFile(string url, string fileName)
+		{
+			using (var stream = await client.GetStreamAsync(url))
+			{
+				using (var file = new FileStream(fileName, FileMode.Create))
+				{
+					stream.CopyTo(file);
+				}
 			}
 		}
 
