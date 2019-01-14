@@ -1,14 +1,6 @@
 version: 0.1.{build}
 
 skip_tags: true # avoid deploy to GitHub loop 
-# enable patching of AssemblyInfo.* files with appveyor version
-assembly_info:
-  patch: true
-  file: AssemblyInfo.*
-  assembly_version: "{version}"
-  assembly_file_version: "{version}"
-  assembly_informational_version: "{version}"
-
 
 # enable patching of dot net core/standard *.csproj files with APPVEYOR version
 dotnet_csproj:
