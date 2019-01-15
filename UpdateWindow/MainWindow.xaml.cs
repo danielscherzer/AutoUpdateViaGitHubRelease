@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace UpdateWindow
@@ -19,7 +20,7 @@ namespace UpdateWindow
 			InitializeComponent();
 		}
 
-		private void Window_Loaded(object sender, RoutedEventArgs e)
+		private async void Window_Loaded(object sender, RoutedEventArgs e)
 		{
 			logFileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "logfile.txt");
 			try
@@ -31,7 +32,7 @@ namespace UpdateWindow
 					return;
 				}
 				var options = new Options { UpdateDataArchive = args[1], ApplicationDir = args[2] };
-				Update(options);
+				await Task.Run(() => Update(options));
 			}
 			catch (Exception ex)
 			{
@@ -43,8 +44,11 @@ namespace UpdateWindow
 		{
 			var time = DateTime.Now.ToLongTimeString();
 			var entry = $"{time}: {message}{Environment.NewLine}";
-			File.AppendAllText(logFileName, entry);
-			log.AppendText(entry);
+			Dispatcher.Invoke(() =>
+			{
+				File.AppendAllText(logFileName, entry);
+				log.AppendText(entry);
+			});
 		}
 
 		private void Update(Options options)
@@ -53,42 +57,70 @@ namespace UpdateWindow
 			if (!Directory.Exists(options.ApplicationDir)) throw new DirectoryNotFoundException(options.ApplicationDir);
 			using (var file = File.OpenRead(options.UpdateDataArchive))
 			{
-				using (var zip = new ZipArchive(file, ZipArchiveMode.Read))
+				try
 				{
-					foreach (var entry in zip.Entries)
+					using (var zip = new ZipArchive(file, ZipArchiveMode.Read))
 					{
-						var destinationFile = Path.Combine(options.ApplicationDir, entry.FullName);
-						for (var i = 0; i < 10; ++i)
+						foreach (var entry in zip.Entries)
 						{
+							var destinationFile = Path.Combine(options.ApplicationDir, entry.FullName);
+							TryDeleteWait(destinationFile);
+							Log($"Creating new {destinationFile}");
 							try
 							{
-								Log($"Try {i} delete {destinationFile}");
-								// try to delete
-								File.Delete(destinationFile);
-								// successful, so we can write new version
-								break;
+								entry.ExtractToFile(destinationFile);
 							}
 							catch
 							{
-								// unsuccessful -> wait before next try
-								Thread.Sleep(1000);
+								//file still in use, no permission -> stop
+								Log($"Error creating new {destinationFile}");
+								return;
 							}
 						}
-						try
+					}
+				}
+				catch
+				{
+					var destinationFile = Path.Combine(options.ApplicationDir, Path.GetFileName(options.UpdateDataArchive));
+					TryDeleteWait(destinationFile);
+					Log($"Creating new {destinationFile}");
+					try
+					{
+						using (var destination = File.Create(destinationFile))
 						{
-							Log($"Extracting new {destinationFile}");
-							entry.ExtractToFile(destinationFile);
+							file.CopyTo(destination);
 						}
-						catch
-						{
-							//file still in use, no permission -> stop
-							Log($"Error extracting new {destinationFile}");
-							return;
-						}
+					}
+					catch
+					{
+						//file still in use, no permission -> stop
+						Log($"Error creating new {destinationFile}");
+						return;
 					}
 				}
 			}
 			Log($"Update Finished");
+		}
+
+		private bool TryDeleteWait(string destinationFile, int tries = 10, int waitTimeMsec = 1000)
+		{
+			for (var i = 0; i < tries; ++i)
+			{
+				Log($"Try {i} delete {destinationFile}");
+				try
+				{
+					// try to delete
+					File.Delete(destinationFile);
+					// successful, so we can write new version
+					return true;
+				}
+				catch
+				{
+					// unsuccessful -> wait before next try
+					Thread.Sleep(waitTimeMsec);
+				}
+			}
+			return false;
 		}
 	}
 }

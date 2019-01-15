@@ -7,8 +7,9 @@ namespace Example
 		static void Main(string[] args)
 		{
 			var updater = new Updater();
-			//updater.Run(@"D:\Daten\git\GitHubReleaseUpdater\UpdateWindow\bin\Debug\UpdateWindow.exe", @"C:\Users\Scherzer\AppData\Local\Temp\update.zip D:\Daten\git\GitHubReleaseUpdater\Example\bin\Debug\netcoreapp2.0");
-			updater.Update("danielScherzer", "GitHubReleaseUpdater").Wait();
+			updater.Run(@"D:\Daten\git\GitHubReleaseUpdater\UpdateWindow\bin\Debug\UpdateWindow.exe", @"C:\Users\Scherzer\AppData\Local\Temp\update.zip D:\Daten\git\GitHubReleaseUpdater\Example\bin\Debug");
+			//on update the example app will replace itself with the release on github
+			//updater.Update("danielScherzer", "GitHubReleaseUpdater").Wait();
 		}
 	}
 }

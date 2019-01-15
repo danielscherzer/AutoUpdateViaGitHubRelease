@@ -26,8 +26,6 @@ build:
 artifacts:
 - path: UpdateWindow\bin\$(configuration)\UpdateWindow.exe
   name: UpdateWindow
-- path: Example\bin\$(configuration)
-  name: Example
 
 deploy:
   release: $(appveyor_build_version)
@@ -36,7 +34,6 @@ deploy:
   auth_token:
     secure: IGRhoLQi/yyC2ej7s79ZRU3PL3NScj4Kxh1Lyydg/CEvD/PbRwIilxmBziEHfwjJ
   artifact: UpdateWindow
-  artifact: Example
   draft: false
   prerelease: false
   on:
