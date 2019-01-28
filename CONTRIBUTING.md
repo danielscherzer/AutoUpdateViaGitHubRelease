@@ -114,8 +114,8 @@ included in the project:
 2. If you cloned a while ago, get the latest changes from upstream:
 
    ```bash
-   git checkout dev
-   git pull upstream dev
+   git checkout master
+   git pull upstream master
    ```
 
 3. Create a new topic branch (off the main project development branch) to
@@ -135,7 +135,7 @@ included in the project:
 5. Locally merge (or rebase) the upstream development branch into your topic branch:
 
    ```bash
-   git pull [--rebase] upstream dev
+   git pull [--rebase] upstream master
    ```
 
 6. Push your topic branch up to your fork:

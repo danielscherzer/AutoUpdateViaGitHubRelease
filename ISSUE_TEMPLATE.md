@@ -1,6 +1,6 @@
 ### Installed product versions
 - Visual Studio: [example 2017 Professional]
-
+- This application: [example 1.1.21]
 
 ### Description
 Replace this text with a short description
