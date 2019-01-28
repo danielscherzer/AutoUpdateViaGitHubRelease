@@ -7,7 +7,7 @@
 
 .net Standard class library that provides application updates from gitHub latest release.
 
-See the [change log](https://github.com/danielscherzer/GitHubReleaseUpdater/blob/master/CHANGELOG.md) for changes and road map.
+See the [change log](/blob/master/CHANGELOG.md) for changes and road map.
 
 ## Features
 
@@ -15,12 +15,12 @@ See the [change log](https://github.com/danielscherzer/GitHubReleaseUpdater/blob
 - Run update (you will need to close your application to allow overwriting your application files)
 
 ## Errors and questions
-Please us the GitHub [Issue function](https://github.com/danielscherzer/GitHubReleaseUpdater/issues/new) to report errors or ask questions.
+Please us the GitHub [Issue function](/issues/new) to report errors or ask questions.
 
 ## Contribute
-Check out the [contribution guidelines](https://github.com/danielscherzer/GitHubReleaseUpdater/blob/master/CONTRIBUTING.md)
+Check out the [contribution guidelines](/blob/master/CONTRIBUTING.md)
 if you want to contribute to this project.
 
 
 ## License
-[Apache 2.0](https://github.com/danielscherzer/GitHubReleaseUpdater/blob/master/LICENSE)
+[Apache 2.0](/blob/master/LICENSE)

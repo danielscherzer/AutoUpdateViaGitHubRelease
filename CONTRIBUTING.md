@@ -104,7 +104,7 @@ included in the project:
 
    ```bash
    # Clone your fork of the repo into the current directory
-   git clone https://github.com/<your-username>/<this-repro-name>.git
+   git clone https://github.com/danielscherzer/<this-repro-name>.git
    # Navigate to the newly cloned directory
    cd <folder-name>
    # Assign the original repo to a remote called "upstream"
