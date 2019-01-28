@@ -1,11 +1,27 @@
-# GitHub latest release updater
+# Application update via GitHub latest release
 
-[![Build status](https://ci.appveyor.com/api/projects/status/u6y6dpwm0v0tu0tl?svg=true)](https://ci.appveyor.com/project/danielscherzer/githubreleaseupdater)
+[![Build status](https://ci.appveyor.com/api/projects/status/kgatpn14q33smmwl?svg=true)](https://ci.appveyor.com/project/danielscherzer/autoupdateviagithubrelease)
 
 
 ---------------------------------------
 
-.net Standard class library that provides application updates from gitHub latest release.
+This is a .net standard class library that allows application to update themselves. The main goal of this project is to create a library that supports creating self-updating applications. This library will make this process straight-forward.
+
+## Assumptions
+- The latest version of your application is deployed as a GitHub release.
+
+## Usage
+1. Create an instance of the `Updater` class
+2. If you want to do an immediate update call `update` with your GitHub user name and the repository with the latest release you want to update to.
+
+```
+using AutoUpdateViaGitHubRelease;
+...
+var updater = new Updater();
+var currentVersion = Assembly.GetEntryAssembly().GetName().Version;
+var newVersionAvailable = await updater.DownloadNewVersion("your user name", "your repository", currentVersion, Path.GetTempPath());
+```
+
 
 See the [change log](CHANGELOG.md) for changes and road map.
 
