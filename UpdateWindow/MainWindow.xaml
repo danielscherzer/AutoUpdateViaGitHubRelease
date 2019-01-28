@@ -6,5 +6,5 @@
         xmlns:local="clr-namespace:UpdateWindow" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow"
         mc:Ignorable="d"
         Title="Updating..." Height="800" Width="800" Loaded="Window_Loaded">
-	<TextBox Name="log"/>
+	<TextBox Name="log" AcceptsReturn="True" IsReadOnly="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.CanContentScroll="True" FontSize="{DynamicResource {x:Static SystemFonts.CaptionFontSizeKey}}"/>
 </Window>

@@ -48,6 +48,7 @@ namespace UpdateWindow
 			{
 				File.AppendAllText(logFileName, entry);
 				log.AppendText(entry);
+				log.ScrollToEnd();
 			});
 		}
 
@@ -100,6 +101,7 @@ namespace UpdateWindow
 				}
 			}
 			Log($"Update Finished");
+			Close();
 		}
 
 		private bool TryDeleteWait(string destinationFile, int tries = 10, int waitTimeMsec = 1000)
