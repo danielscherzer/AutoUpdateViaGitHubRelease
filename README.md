@@ -15,7 +15,7 @@ See the [change log](CHANGELOG.md) for changes and road map.
 - Run update (you will need to close your application to allow overwriting your application files)
 
 ## Errors and questions
-Please us the GitHub [Issue function](/issues/new) to report errors or ask questions.
+Please us the GitHub [Issue function](https://github.com/danielscherzer/AutoUpdateViaGitHubRelease/issues/new) to report errors or ask questions.
 
 ## Contribute
 Check out the [contribution guidelines](CONTRIBUTING.md)
@@ -23,4 +23,4 @@ if you want to contribute to this project.
 
 
 ## License
-[Apache 2.0](LICENSE)
+[Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0)
