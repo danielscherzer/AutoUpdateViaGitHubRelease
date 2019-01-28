@@ -101,7 +101,7 @@ namespace UpdateWindow
 				}
 			}
 			Log($"Update Finished");
-			Close();
+			Application.Current.Shutdown();
 		}
 
 		private bool TryDeleteWait(string destinationFile, int tries = 10, int waitTimeMsec = 1000)
