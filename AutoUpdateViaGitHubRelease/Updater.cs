@@ -18,7 +18,7 @@ namespace AutoUpdateViaGitHubRelease
 			//ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 		}
 
-		public void StartUpdate(string updateTempDir, string destinationDir)
+		public static void StartUpdate(string updateTempDir, string destinationDir)
 		{
 			{
 				var updateDataArchive = UpdateArchive(updateTempDir);
@@ -65,7 +65,7 @@ namespace AutoUpdateViaGitHubRelease
 
 		private static string UpdateArchive(string updateTempDir) => Path.Combine(updateTempDir, "update.zip");
 
-		private void Run(string executablePath, string parameters)
+		private static void Run(string executablePath, string parameters)
 		{
 			var process = new Process
 			{
