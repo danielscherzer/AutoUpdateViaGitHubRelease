@@ -22,7 +22,7 @@ namespace UpdateWindow
 
 		private async void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			logFileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "updateLog.log");
+			logFileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "update.log");
 			Log($"Logging to {logFileName}");
 			try
 			{
@@ -34,6 +34,7 @@ namespace UpdateWindow
 				}
 				var options = new Options { UpdateDataArchive = args[1], ApplicationDir = args[2] };
 				await Task.Run(() => Update(options));
+				Thread.Sleep(3000);
 				Application.Current.Shutdown();
 			}
 			catch (Exception ex)
@@ -56,10 +57,11 @@ namespace UpdateWindow
 
 		private void Update(Options options)
 		{
-			if (!File.Exists(options.UpdateDataArchive)) throw new FileNotFoundException(options.UpdateDataArchive);
 			if (!Directory.Exists(options.ApplicationDir)) throw new DirectoryNotFoundException(options.ApplicationDir);
 			logFileName = Path.Combine(options.ApplicationDir, Path.GetFileName(logFileName));
 			Log($"Logging to {logFileName}");
+			if (!File.Exists(options.UpdateDataArchive)) throw new FileNotFoundException(options.UpdateDataArchive);
+
 			using (var file = File.OpenRead(options.UpdateDataArchive))
 			{
 				try
