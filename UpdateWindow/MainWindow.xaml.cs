@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
@@ -128,6 +129,22 @@ namespace UpdateWindow
 				}
 			}
 			return false;
+		}
+
+		private static void Run(string executablePath, string parameters)
+		{
+			var process = new Process
+			{
+				StartInfo = new ProcessStartInfo
+				{
+					FileName = executablePath,
+					Arguments = parameters,
+					WorkingDirectory = Path.GetDirectoryName(executablePath),
+					RedirectStandardOutput = false,
+					RedirectStandardError = false,
+				}
+			};
+			process.Start();
 		}
 	}
 }
