@@ -24,7 +24,7 @@ namespace AutoUpdateViaGitHubRelease
 					return false;
 				}
 			}
-			Task.Run(DownloadNewVersion).ContinueWith(task => Available = task.Result);
+			Task.Run(DownloadNewVersion).ContinueWith(task => Available = task.Result, TaskContinuationOptions.ExecuteSynchronously);
 		}
 
 		public bool Available
