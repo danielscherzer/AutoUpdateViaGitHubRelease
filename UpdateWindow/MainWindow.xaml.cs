@@ -33,7 +33,7 @@ namespace UpdateWindow
 					Log($"Usage: {nameof(UpdateWindow)} <{nameof(Options.UpdateDataArchive)}> <{nameof(Options.ApplicationDir)}>");
 					return;
 				}
-				var options = new Options { UpdateDataArchive = args[1], ApplicationDir = args[2] };
+				var options = new Options( args[1], args[2] );
 				await Task.Run(() => Update(options));
 				Thread.Sleep(3000);
 				Application.Current.Shutdown();

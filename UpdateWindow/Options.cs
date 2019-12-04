@@ -1,17 +1,15 @@
 ﻿namespace UpdateWindow
 {
-	class Options
+	struct Options
 	{
-		//[Value(0, Required = true, HelpText = "Update data archive name")]
-		public string UpdateDataArchive { get; set; }
+		public Options(string updateDataArchive, string applicationDir) : this()
+		{
+			UpdateDataArchive = updateDataArchive;
+			ApplicationDir = applicationDir;
+		}
 
-		//[Value(1, Required = true, HelpText = "Application directory")]
-		public string ApplicationDir { get; set; }
+		public string UpdateDataArchive { get; }
 
-		//[Value(2, Required = true, HelpText = "The assembly version")]
-		//public Version Version { get; set; }
-
-		//[Option('u', "update", Default = "", HelpText = "Folder of application to update.")]
-		//public string UpdateDirectory { get; set; }
+		public string ApplicationDir { get; }
 	}
 }
