@@ -1,66 +1,25 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
 
-namespace UpdateWindow
+namespace Update
 {
-	/// <summary>
-	/// Interaction logic for MainWindow.xaml
-	/// </summary>
-	public partial class MainWindow : Window
+	class Update
 	{
-		private string logFileName;
+		private Logger logger;
 
-		public MainWindow()
+		public Update(Logger logger)
 		{
-			InitializeComponent();
+			this.logger = logger;
 		}
 
-		private async void Window_Loaded(object sender, RoutedEventArgs e)
-		{
-			logFileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "update.log");
-			Log($"Logging to {logFileName}");
-			try
-			{
-				var args = Environment.GetCommandLineArgs();
-				if(3 != args.Length)
-				{
-					Log($"Usage: {nameof(UpdateWindow)} <UpdateDataArchive> <ApplicationDir>");
-					return;
-				}
+		private void Log(string message) => logger.Log(message);
 
-				await Task.Run(() => Update(applicationDir: args[1], updateDataArchive:args[2]));
-				Thread.Sleep(3000);
-				Application.Current.Shutdown();
-			}
-			catch (Exception ex)
-			{
-				Log(ex.ToString());
-			}
-		}
-
-		private void Log(string message)
-		{
-			var time = DateTime.Now.ToLongTimeString();
-			var entry = $"{time}: {message}{Environment.NewLine}";
-			Dispatcher.Invoke(() =>
-			{
-				File.AppendAllText(logFileName, entry);
-				log.AppendText(entry);
-				log.ScrollToEnd();
-			});
-		}
-
-		private void Update(string applicationDir, string updateDataArchive)
+		internal void Execute(string applicationDir, string updateDataArchive)
 		{
 			if (!Directory.Exists(applicationDir)) throw new DirectoryNotFoundException(applicationDir);
-			logFileName = Path.Combine(applicationDir, Path.GetFileName(logFileName));
-			Log($"Logging to {logFileName}");
+			logger.LogFileName = Path.Combine(applicationDir, Path.GetFileName(logger.LogFileName));
 			if (!File.Exists(updateDataArchive)) throw new FileNotFoundException(updateDataArchive);
 
 			using (var file = File.OpenRead(updateDataArchive))
