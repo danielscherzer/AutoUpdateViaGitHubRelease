@@ -13,16 +13,17 @@ namespace UnitTestProject
 		[TestMethod]
 		public void DownloadUpdateInstallerTo()
 		{
-			//var gitHub = new GitHubApi();
-			//var tempDir = Path.Combine(Path.GetTempPath(), "AutoUpdateViaGitHubRelease");
-			//Directory.CreateDirectory(tempDir);
-			//async Task ExtractInstaller()
-			//{
-			//	var installerFileName = Path.Combine(tempDir, "updater.zip");
-			//	await gitHub.ExtractUpdateInstallerTo(tempDir);
-			//}
-			//Task.Run(ExtractInstaller).Wait();
-			//Assert.IsTrue(File.Exists(Path.Combine(tempDir, "update.dll")));
+			var gitHub = new GitHubApi();
+			var tempDir = Path.Combine(Path.GetTempPath(), "AutoUpdateViaGitHubRelease");
+			Directory.CreateDirectory(tempDir);
+			async Task ExtractInstaller()
+			{
+				var installerFileName = Path.Combine(tempDir, "updater.zip");
+				await gitHub.ExtractUpdateInstallerTo(tempDir);
+			}
+			Task.Run(ExtractInstaller).Wait();
+			Assert.IsTrue(File.Exists(Path.Combine(tempDir, "update.dll")));
+			Assert.IsTrue(File.Exists(Path.Combine(tempDir, "Update.runtimeconfig.json")));
 		}
 
 		[TestMethod]
