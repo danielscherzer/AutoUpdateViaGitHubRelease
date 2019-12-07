@@ -23,7 +23,7 @@ before_build:
 build:
   publish_nuget: true             # package projects with .nuspec files and push to artifacts
   publish_nuget_symbols: true     # generate and publish NuGet symbol packages
-  verbosity: minimal              # MSBuild verbosity level
+ # verbosity: minimal              # MSBuild verbosity level
 
 artifacts:
 - path: UpdateWindow\bin\$(configuration)\UpdateWindow.exe
