@@ -28,7 +28,7 @@ build:
 artifacts:
 - path: UpdateWindow\bin\$(configuration)\UpdateWindow.exe
   name: UpdateWindow
-- path: Update\bin\**\*.*
+- path: Update\bin\*\*
   name: Update
   type: zip
 
