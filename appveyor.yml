@@ -28,7 +28,7 @@ build:
 artifacts:
 - path: UpdateWindow\bin\$(configuration)\UpdateWindow.exe
   name: UpdateWindow
-- path: Update\bin\$(configuration)
+- path: Update\bin\$(configuration)\netcoreapp2.0
   name: Update
   type: zip
 
