@@ -18,7 +18,7 @@ namespace Installer
 
 		internal void Execute(string applicationDir, string updateDataArchive)
 		{
-			if (!Directory.Exists(applicationDir)) throw new DirectoryNotFoundException(applicationDir);
+			Directory.CreateDirectory(applicationDir);
 			logger.LogFileName = Path.Combine(applicationDir, Path.GetFileName(logger.LogFileName));
 			if (!File.Exists(updateDataArchive)) throw new FileNotFoundException(updateDataArchive);
 

@@ -15,8 +15,9 @@ namespace UnitTestProject
 			string tempDir = TempDir();
 			Directory.CreateDirectory(tempDir);
 			Task.Run(() => gitHub.ExtractInstallerTo(tempDir)).Wait();
-			Assert.IsTrue(File.Exists(Path.Combine(tempDir, "update.dll")));
-			Assert.IsTrue(File.Exists(Path.Combine(tempDir, "Update.runtimeconfig.json")));
+			Assert.IsTrue(File.Exists(Path.Combine(tempDir, UpdateTools.UpdateTool)));
+			var json = Path.ChangeExtension(UpdateTools.UpdateTool, ".runtimeconfig.json");
+			Assert.IsTrue(File.Exists(Path.Combine(tempDir, json)));
 		}
 
 		private static string TempDir()

@@ -53,7 +53,6 @@ namespace AutoUpdateViaGitHubRelease
 		public static void InstallUpdate(string updateTempDir, string destinationDir)
 		{
 			var updateDataArchive = GetUpdateArchiveFileName(updateTempDir);
-			var updateTool = "Installer.dll";
 
 			//string Quote(string input) => $"\"{input}\"";
 			string Quote(string input) => input;
@@ -63,7 +62,7 @@ namespace AutoUpdateViaGitHubRelease
 				StartInfo = new ProcessStartInfo
 				{
 					FileName = "dotnet",
-					Arguments = $"{updateTool}",// {Quote(updateDataArchive)} {Quote(destinationDir)}",
+					Arguments = $"{UpdateTool} {Quote(updateDataArchive)} {Quote(destinationDir)}",
 					WorkingDirectory = updateTempDir,
 					RedirectStandardOutput = false,
 					RedirectStandardError = false,
@@ -71,6 +70,8 @@ namespace AutoUpdateViaGitHubRelease
 			};
 			process.Start();
 		}
+
+		public const string UpdateTool = "Installer.dll";
 
 		public static string GetUpdateArchiveFileName(string updateTempDir) => Path.Combine(updateTempDir, "update.zip");
 	}
