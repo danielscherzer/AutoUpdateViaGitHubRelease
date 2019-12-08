@@ -3,25 +3,25 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 
-namespace Update
+namespace Installer
 {
 	class Program
 	{
 		static void Main(string[] args)
 		{
 			var logger = new Logger(Path.ChangeExtension(Assembly.GetExecutingAssembly().Location, ".log"));
-			var update = new Update(logger);
+			var install = new Install(logger);
 			try
 			{
 				if (2 != args.Length)
 				{
-					logger.Log($"Usage: Update <UpdateDataArchive> <ApplicationDir>");
+					logger.Log($"Usage: Installer <UpdateDataArchive> <ApplicationDir>");
 					return;
 				}
 				var updateDataArchive = args[0];
 				var applicationDir = args[1];
 				logger.Log($"Parameter are {nameof(updateDataArchive)}='{updateDataArchive}' and {nameof(applicationDir)}='{applicationDir}'");
-				update.Execute(applicationDir, updateDataArchive);
+				install.Execute(applicationDir, updateDataArchive);
 			}
 			catch (Exception ex)
 			{

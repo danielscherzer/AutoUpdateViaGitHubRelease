@@ -53,7 +53,7 @@ namespace AutoUpdateViaGitHubRelease
 		public static void InstallUpdate(string updateTempDir, string destinationDir)
 		{
 			var updateDataArchive = GetUpdateArchiveFileName(updateTempDir);
-			var updateTool = "Update.dll";
+			var updateTool = "Installer.dll";
 
 			//string Quote(string input) => $"\"{input}\"";
 			string Quote(string input) => input;

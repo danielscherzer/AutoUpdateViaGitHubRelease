@@ -19,7 +19,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateWindow", "UpdateWindo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoUpdateViaGitHubRelease.Test", "AutoUpdateViaGitHubRelease.Test\AutoUpdateViaGitHubRelease.Test.csproj", "{7A691D11-F3E1-4855-8A77-46B089010183}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Update", "Update\Update.csproj", "{780B3851-AF1C-42B3-855B-E83F88D475EC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer", "Installer\Installer.csproj", "{780B3851-AF1C-42B3-855B-E83F88D475EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

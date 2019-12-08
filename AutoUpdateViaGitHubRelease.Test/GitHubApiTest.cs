@@ -42,7 +42,7 @@ namespace UnitTestProject
 		[TestMethod]
 		public void Install()
 		{
-			//DownloadNewVersion();
+			DownloadNewVersion();
 			var tempDir = TempDir();
 			UpdateTools.InstallUpdate(tempDir, Path.Combine(tempDir, "destination"));
 		}

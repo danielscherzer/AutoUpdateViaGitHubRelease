@@ -3,13 +3,13 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading;
 
-namespace Update
+namespace Installer
 {
-	class Update
+	class Install
 	{
 		private Logger logger;
 
-		public Update(Logger logger)
+		public Install(Logger logger)
 		{
 			this.logger = logger;
 		}
