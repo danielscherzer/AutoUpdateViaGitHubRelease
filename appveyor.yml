@@ -25,6 +25,11 @@ build:
   publish_nuget_symbols: true     # generate and publish NuGet symbol packages
   verbosity: minimal              # MSBuild verbosity level
 
+test:
+  # only categories to test
+  categories:
+    - A
+
 artifacts:
 - path: UpdateWindow\bin\$(configuration)\UpdateWindow.exe
   name: UpdateWindow
