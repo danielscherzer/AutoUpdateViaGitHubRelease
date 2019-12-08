@@ -7,17 +7,18 @@ namespace AutoUpdateViaGitHubRelease
 {
 	public class Update : INotifyPropertyChanged
 	{
-		public Update(string user, string project, Assembly assembly, string tempDir)
+		public Update(string user, string repository, Assembly assembly, string tempDir)
 		{
 			this.tempDir = tempDir;
 			destinationDir = Path.GetDirectoryName(assembly.Location);
+			Directory.CreateDirectory(destinationDir);
 			gitHub = new GitHubApi();
 			async Task<bool> DownloadNewVersion()
 			{
 				try
 				{
 					var currentVersion = assembly.GetName().Version;
-					return await gitHub.DownloadNewVersion(user, project, currentVersion, tempDir);
+					return await gitHub.DownloadNewVersion(user, repository, currentVersion, tempDir);
 				}
 				catch
 				{
@@ -26,6 +27,11 @@ namespace AutoUpdateViaGitHubRelease
 			}
 			Task.Run(DownloadNewVersion)
 				.ContinueWith(task => Available = task.Result, TaskScheduler.FromCurrentSynchronizationContext());
+		}
+
+		public Update(string user, string repository, Assembly assembly): this(user, repository, assembly
+			, Path.Combine(Path.GetTempPath(), nameof(repository)))
+		{
 		}
 
 		public bool Available

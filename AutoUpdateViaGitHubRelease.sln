@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateWindow", "UpdateWindow\UpdateWindow.csproj", "{E3A9902F-A0F6-4FBD-A7EC-7BA45BD7CA6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject", "UnitTestProject\UnitTestProject.csproj", "{7A691D11-F3E1-4855-8A77-46B089010183}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoUpdateViaGitHubRelease.Test", "AutoUpdateViaGitHubRelease.Test\AutoUpdateViaGitHubRelease.Test.csproj", "{7A691D11-F3E1-4855-8A77-46B089010183}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Update", "Update\Update.csproj", "{780B3851-AF1C-42B3-855B-E83F88D475EC}"
 EndProject

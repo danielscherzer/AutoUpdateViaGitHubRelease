@@ -18,7 +18,10 @@ namespace Update
 					logger.Log($"Usage: Update <UpdateDataArchive> <ApplicationDir>");
 					return;
 				}
-				update.Execute(applicationDir: args[0], updateDataArchive: args[1]);
+				var updateDataArchive = args[0];
+				var applicationDir = args[1];
+				logger.Log($"Parameter are {nameof(updateDataArchive)}='{updateDataArchive}' and {nameof(applicationDir)}='{applicationDir}'");
+				update.Execute(applicationDir, updateDataArchive);
 			}
 			catch (Exception ex)
 			{

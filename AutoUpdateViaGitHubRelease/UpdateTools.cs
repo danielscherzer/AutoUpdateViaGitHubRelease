@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using System.Threading.Tasks;
 
 namespace AutoUpdateViaGitHubRelease
@@ -17,21 +16,22 @@ namespace AutoUpdateViaGitHubRelease
 				//new version download
 				var updateArchiveFileName = GetUpdateArchiveFileName(updateTempDir);
 				//Get update installer that will extract the update archive to the application directory
-				await gitHub.ExtractUpdateInstallerTo(updateTempDir);
+				await gitHub.ExtractInstallerTo(updateTempDir);
 				await gitHub.DownloadFile(GitHubApi.ExtractDownloadUrl(latestReleaseJson), updateArchiveFileName);
 				return true;
 			}
 			return false;
 		}
 
-		public static async Task ExtractUpdateInstallerTo(this GitHubApi gitHub, string updateTempDir)
+		public static async Task ExtractInstallerTo(this GitHubApi gitHub, string updateTempDir)
 		{
-			var installerFileName = Path.Combine(updateTempDir, "updater.zip");
+			Directory.CreateDirectory(updateTempDir);
+			var installerFileName = Path.Combine(updateTempDir, "installer.zip");
 			var latestReleaseJson = await gitHub.GetLatestReleaseJSONAsync("danielScherzer", "AutoUpdateViaGitHubRelease");
 			var urlUpdateInstaller = GitHubApi.ExtractDownloadUrl(latestReleaseJson);
 			await gitHub.DownloadFile(urlUpdateInstaller, installerFileName);
-			ZipFile.ExtractToDirectory(installerFileName, updateTempDir);
-			File.Delete(installerFileName);
+			ZipExtensions.ExtractOverwriteToDirectory(installerFileName, updateTempDir);
+			try { File.Delete(installerFileName); } catch { }
 		}
 
 		public static void RunProcess(string executablePath, string parameters)
@@ -52,14 +52,24 @@ namespace AutoUpdateViaGitHubRelease
 
 		public static void InstallUpdate(string updateTempDir, string destinationDir)
 		{
-			{
-				var updateDataArchive = GetUpdateArchiveFileName(updateTempDir);
-				var updateTool = Path.Combine(updateTempDir, "update.dll"); ;
+			var updateDataArchive = GetUpdateArchiveFileName(updateTempDir);
+			var updateTool = "Update.dll";
 
-				//string Quote(string input) => $"\"{input}\"";
-				string Quote(string input) => input;
-				RunProcess($"dotnet", $"{Quote(updateTool)} {Quote(updateDataArchive)} {Quote(destinationDir)}");
-			}
+			//string Quote(string input) => $"\"{input}\"";
+			string Quote(string input) => input;
+			//RunProcess($"dotnet {Quote(updateTool)}", $"{Quote(updateDataArchive)} {Quote(destinationDir)}");
+			var process = new Process
+			{
+				StartInfo = new ProcessStartInfo
+				{
+					FileName = "dotnet",
+					Arguments = $"{updateTool}",// {Quote(updateDataArchive)} {Quote(destinationDir)}",
+					WorkingDirectory = updateTempDir,
+					RedirectStandardOutput = false,
+					RedirectStandardError = false,
+				}
+			};
+			process.Start();
 		}
 
 		public static string GetUpdateArchiveFileName(string updateTempDir) => Path.Combine(updateTempDir, "update.zip");
