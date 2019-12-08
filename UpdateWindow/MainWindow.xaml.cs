@@ -34,7 +34,7 @@ namespace UpdateWindow
 					return;
 				}
 
-				await Task.Run(() => Update(applicationDir: args[1], updateDataArchive:args[2]));
+				await Task.Run(() => Update(applicationDir: args[2], updateDataArchive:args[1]));
 				Thread.Sleep(3000);
 				Application.Current.Shutdown();
 			}
