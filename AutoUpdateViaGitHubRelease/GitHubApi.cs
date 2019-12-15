@@ -32,7 +32,7 @@ namespace AutoUpdateViaGitHubRelease
 
 		public static Version ExtractVersion(JObject json) => new Version(json["name"].ToObject<string>());
 
-		public async Task<JObject> GetJSONAsync(string prefix) => JObject.Parse(await client.GetStringAsync($"https://api.github.com/{prefix}"));
+		public async Task<JObject> GetJSONAsync(string gitHubDirectory) => JObject.Parse(await client.GetStringAsync($"https://api.github.com/{gitHubDirectory}"));
 
 		public async Task<JObject> GetLatestReleaseJSONAsync(string user, string repository) => await GetJSONAsync($"repos/{user}/{repository}/releases/latest");
 

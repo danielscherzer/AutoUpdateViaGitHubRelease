@@ -9,6 +9,20 @@ namespace UnitTestProject
 	public class GitHubApiTest
 	{
 		[TestMethod]
+		public void ParseGitHubJson()
+		{
+			var gitHub = new GitHubApi();
+			var task = Task.Run(() => gitHub.GetLatestReleaseJSONAsync("danielScherzer", "AutoUpdateViaGitHubRelease"));
+			task.Wait();
+			var json = task.Result;
+			var version = GitHubApi.ExtractVersion(json);
+			Assert.AreNotEqual(0, version.Build);
+			var url = GitHubApi.ExtractDownloadUrl(json);
+			Assert.AreNotEqual(0, url.Length);
+		}
+
+
+		[TestMethod]
 		public void DownloadUpdateInstallerTo()
 		{
 			var gitHub = new GitHubApi();
