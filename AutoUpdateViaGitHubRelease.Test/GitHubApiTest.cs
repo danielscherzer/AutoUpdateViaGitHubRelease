@@ -1,6 +1,8 @@
 ﻿using AutoUpdateViaGitHubRelease;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace UnitTestProject
@@ -21,45 +23,47 @@ namespace UnitTestProject
 			Assert.AreNotEqual(0, url.Length);
 		}
 
-
 		[TestMethod]
-		public void DownloadUpdateInstallerTo()
+		public void DownloadInstaller()
 		{
-			var gitHub = new GitHubApi();
-			string tempDir = TempDir();
-			Directory.CreateDirectory(tempDir);
-			Task.Run(() => gitHub.ExtractInstallerTo(tempDir)).Wait();
-			Assert.IsTrue(File.Exists(Path.Combine(tempDir, UpdateTools.UpdateTool)));
-			var json = Path.ChangeExtension(UpdateTools.UpdateTool, ".runtimeconfig.json");
-			Assert.IsTrue(File.Exists(Path.Combine(tempDir, json)));
-		}
-
-		private static string TempDir()
-		{
-			return Path.Combine(Path.GetTempPath(), "AutoUpdateViaGitHubRelease");
+			var result = HelperDownloadInstaller();
+			Assert.IsTrue(result.Length > 0);
 		}
 
 		[TestMethod]
 		public void DownloadNewVersion()
 		{
-			var gitHub = new GitHubApi();
-			var tempDir = TempDir();
-			Directory.CreateDirectory(tempDir);
-			async Task<bool> NewVersion()
-			{
-				return await gitHub.DownloadNewVersion("danielScherzer", "AutoUpdateViaGitHubRelease", new System.Version(0, 0), tempDir);
-			}
-			var task = Task.Run(NewVersion);
-			task.Wait();
-			Assert.IsTrue(task.Result);
+			var update = HelperUpdateCheck();
+			update.DownloadTask.Wait();
+			Assert.IsTrue(update.Available);
 		}
 
 		[TestMethod]
 		public void Install()
 		{
-			DownloadNewVersion();
+			var update = HelperUpdateCheck();
+			update.DownloadTask.Wait();
+			update.Install();
+		}
+
+		private static string TempDir() => Path.Combine(Path.GetTempPath(), "AutoUpdateViaGitHubRelease");
+
+		private static string HelperDownloadInstaller()
+		{
+			var gitHub = new GitHubApi();
+			string tempDir = TempDir();
+			Directory.CreateDirectory(tempDir);
+			var task = Task.Run(() => gitHub.ExtractInstallerTo(tempDir));
+			task.Wait();
+			return task.Result;
+		}
+
+		private static Update HelperUpdateCheck()
+		{
+			SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
 			var tempDir = TempDir();
-			UpdateTools.InstallUpdate(tempDir, Path.Combine(tempDir, "destination"));
+			var update = new Update("danielScherzer", "AutoUpdateViaGitHubRelease", new System.Version(0, 0), tempDir, "destination");
+			return update;
 		}
 	}
 }

@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -7,32 +9,45 @@ namespace AutoUpdateViaGitHubRelease
 {
 	public class Update : INotifyPropertyChanged
 	{
-		public Update(string user, string repository, Assembly assembly, string tempDir)
+		public Update(string user, string repository, Version currentVersion, string tempDir, string destinationDir)
 		{
 			this.tempDir = tempDir;
-			destinationDir = Path.GetDirectoryName(assembly.Location);
+			Directory.CreateDirectory(tempDir);
+			this.destinationDir = destinationDir;
 			Directory.CreateDirectory(destinationDir);
 			gitHub = new GitHubApi();
 			async Task<bool> DownloadNewVersion()
 			{
 				try
 				{
-					var currentVersion = assembly.GetName().Version;
-					return await gitHub.DownloadNewVersion(user, repository, currentVersion, tempDir);
+					var latestReleaseJson = await gitHub.GetLatestReleaseJSONAsync(user, repository);
+					var version = GitHubApi.ExtractVersion(latestReleaseJson);
+					if (version > currentVersion)
+					{
+						//Get update installer that will extract the update archive to the application directory
+						installer = await gitHub.ExtractInstallerTo(tempDir);
+						var updateUrl = GitHubApi.ExtractDownloadUrl(latestReleaseJson);
+						updateArchiveFileName = Path.Combine(tempDir, Path.GetFileName(updateUrl));
+						//new version download
+						await gitHub.DownloadFile(updateUrl, updateArchiveFileName);
+						return true;
+					}
+					return false;
 				}
 				catch
 				{
 					return false;
 				}
 			}
-			Task.Run(DownloadNewVersion)
+			DownloadTask = Task.Run(DownloadNewVersion)
 				.ContinueWith(task => Available = task.Result, TaskScheduler.FromCurrentSynchronizationContext());
 		}
 
-		public Update(string user, string repository, Assembly assembly): this(user, repository, assembly
-			, Path.Combine(Path.GetTempPath(), nameof(repository)))
-		{
-		}
+		public Update(string user, string repository, Assembly assembly, string tempDir)
+			: this(user, repository, assembly.GetName().Version, tempDir, Path.GetDirectoryName(assembly.Location)) { }
+
+			public Update(string user, string repository, Assembly assembly)
+			: this(user, repository, assembly, Path.Combine(Path.GetTempPath(), nameof(repository))) { }
 
 		public bool Available
 		{
@@ -44,13 +59,34 @@ namespace AutoUpdateViaGitHubRelease
 			}
 		}
 
+		public Task<bool> DownloadTask { get; }
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		public bool Install()
 		{
 			try
 			{
-				if (Available) { UpdateTools.InstallUpdate(tempDir, destinationDir); }
+				if (Available)
+				{
+					//string Quote(string input) => $"\"{input}\"";
+					
+					string Quote(string input) => input;
+					var isExe = installer.ExtensionIs(".exe");
+					var arg0 = isExe ? string.Empty : installer;
+					var process = new Process
+					{
+						StartInfo = new ProcessStartInfo
+						{
+							FileName = isExe ? installer : "dotnet",
+							Arguments = $"{arg0} {Quote(updateArchiveFileName)} {Quote(destinationDir)}",
+							WorkingDirectory = tempDir,
+							RedirectStandardOutput = false,
+							RedirectStandardError = false,
+						}
+					};
+					process.Start();
+				}
 				return Available;
 			}
 			catch
@@ -63,5 +99,7 @@ namespace AutoUpdateViaGitHubRelease
 		private readonly string tempDir;
 		private readonly string destinationDir;
 		private bool _available = false;
+		private string installer;
+		private string updateArchiveFileName;
 	}
 }
