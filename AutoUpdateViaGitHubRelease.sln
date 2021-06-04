@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoUpdateViaGitHubRelease", "AutoUpdateViaGitHubRelease\AutoUpdateViaGitHubRelease.csproj", "{12212521-A129-41AE-B5C8-2373754BD5E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoUpdateViaGitHubRelease", "src\AutoUpdateViaGitHubRelease.csproj", "{12212521-A129-41AE-B5C8-2373754BD5E3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A2F2FC32-95CB-48D7-90C9-93CBB2B101EF}"
 	ProjectSection(SolutionItems) = preProject
@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateWindow", "UpdateWindow\UpdateWindow.csproj", "{E3A9902F-A0F6-4FBD-A7EC-7BA45BD7CA6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoUpdateViaGitHubRelease.Test", "AutoUpdateViaGitHubRelease.Test\AutoUpdateViaGitHubRelease.Test.csproj", "{7A691D11-F3E1-4855-8A77-46B089010183}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{7A691D11-F3E1-4855-8A77-46B089010183}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer", "Installer\Installer.csproj", "{780B3851-AF1C-42B3-855B-E83F88D475EC}"
 EndProject

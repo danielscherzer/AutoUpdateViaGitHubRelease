@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.IO.Compression;
 using System.Threading;
 
@@ -7,7 +6,7 @@ namespace Installer
 {
 	class Install
 	{
-		private Logger logger;
+		private readonly Logger logger;
 
 		public Install(Logger logger)
 		{
@@ -20,29 +19,31 @@ namespace Installer
 		{
 			Directory.CreateDirectory(applicationDir);
 			logger.LogFileName = Path.Combine(applicationDir, Path.GetFileName(logger.LogFileName));
-			if (!File.Exists(updateDataArchive)) throw new FileNotFoundException(updateDataArchive);
+			if (!File.Exists(updateDataArchive))
+			{
+				logger.Log($"{nameof(updateDataArchive)}='{updateDataArchive}' does not exist.");
+				return;
+			}
 
 			using (var file = File.OpenRead(updateDataArchive))
 			{
 				try
 				{
-					using (var zip = new ZipArchive(file, ZipArchiveMode.Read))
+					using var zip = new ZipArchive(file, ZipArchiveMode.Read);
+					foreach (var entry in zip.Entries)
 					{
-						foreach (var entry in zip.Entries)
+						var destinationFile = Path.Combine(applicationDir, entry.FullName);
+						TryDeleteWait(destinationFile);
+						Log($"Creating new {destinationFile}");
+						try
 						{
-							var destinationFile = Path.Combine(applicationDir, entry.FullName);
-							TryDeleteWait(destinationFile);
-							Log($"Creating new {destinationFile}");
-							try
-							{
-								entry.ExtractToFile(destinationFile);
-							}
-							catch
-							{
-								//file still in use, no permission -> stop
-								Log($"Error creating new {destinationFile}");
-								return;
-							}
+							entry.ExtractToFile(destinationFile);
+						}
+						catch
+						{
+							//file still in use, no permission -> stop
+							Log($"Error creating new {destinationFile}");
+							return;
 						}
 					}
 				}
@@ -53,10 +54,8 @@ namespace Installer
 					Log($"Creating new {destinationFile}");
 					try
 					{
-						using (var destination = File.Create(destinationFile))
-						{
-							file.CopyTo(destination);
-						}
+						using var destination = File.Create(destinationFile);
+						file.CopyTo(destination);
 					}
 					catch
 					{
@@ -88,22 +87,6 @@ namespace Installer
 				}
 			}
 			return false;
-		}
-
-		private static void Run(string executablePath, string parameters)
-		{
-			var process = new Process
-			{
-				StartInfo = new ProcessStartInfo
-				{
-					FileName = executablePath,
-					Arguments = parameters,
-					WorkingDirectory = Path.GetDirectoryName(executablePath),
-					RedirectStandardOutput = false,
-					RedirectStandardError = false,
-				}
-			};
-			process.Start();
 		}
 	}
 }

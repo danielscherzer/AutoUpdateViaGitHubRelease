@@ -37,6 +37,6 @@ namespace AutoUpdateViaGitHubRelease
 		public async Task<JObject> GetLatestReleaseJSONAsync(string user, string repository) => await GetJSONAsync($"repos/{user}/{repository}/releases/latest");
 
 
-		private HttpClient client = new HttpClient();
+		private readonly HttpClient client = new HttpClient();
 	}
 }

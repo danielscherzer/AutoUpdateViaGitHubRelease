@@ -18,12 +18,14 @@ namespace UpdateWindow
 
 		public MainWindow()
 		{
+			var assemblyLocation = Assembly.GetExecutingAssembly().Location;
+			var assemblyDir = Path.GetDirectoryName(assemblyLocation) ?? assemblyLocation;
+			logFileName = Path.Combine(assemblyDir, "update.log");
 			InitializeComponent();
 		}
 
 		private async void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			logFileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "update.log");
 			Log($"Logging to {logFileName}");
 			try
 			{
@@ -67,23 +69,21 @@ namespace UpdateWindow
 			{
 				try
 				{
-					using (var zip = new ZipArchive(file, ZipArchiveMode.Read))
+					using var zip = new ZipArchive(file, ZipArchiveMode.Read);
+					foreach (var entry in zip.Entries)
 					{
-						foreach (var entry in zip.Entries)
+						var destinationFile = Path.Combine(applicationDir, entry.FullName);
+						TryDeleteWait(destinationFile);
+						Log($"Creating new {destinationFile}");
+						try
 						{
-							var destinationFile = Path.Combine(applicationDir, entry.FullName);
-							TryDeleteWait(destinationFile);
-							Log($"Creating new {destinationFile}");
-							try
-							{
-								entry.ExtractToFile(destinationFile);
-							}
-							catch
-							{
-								//file still in use, no permission -> stop
-								Log($"Error creating new {destinationFile}");
-								return;
-							}
+							entry.ExtractToFile(destinationFile);
+						}
+						catch
+						{
+							//file still in use, no permission -> stop
+							Log($"Error creating new {destinationFile}");
+							return;
 						}
 					}
 				}
@@ -94,10 +94,8 @@ namespace UpdateWindow
 					Log($"Creating new {destinationFile}");
 					try
 					{
-						using (var destination = File.Create(destinationFile))
-						{
-							file.CopyTo(destination);
-						}
+						using var destination = File.Create(destinationFile);
+						file.CopyTo(destination);
 					}
 					catch
 					{
@@ -139,7 +137,7 @@ namespace UpdateWindow
 				{
 					FileName = executablePath,
 					Arguments = parameters,
-					WorkingDirectory = Path.GetDirectoryName(executablePath),
+					WorkingDirectory = Path.GetDirectoryName(executablePath) ?? executablePath,
 					RedirectStandardOutput = false,
 					RedirectStandardError = false,
 				}
