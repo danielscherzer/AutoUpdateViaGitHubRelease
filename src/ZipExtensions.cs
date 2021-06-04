@@ -14,7 +14,7 @@ namespace AutoUpdateViaGitHubRelease
 					var result = "";
 					foreach(var entry in zip.Entries)
 					{
-						var destinationFileName = Path.Combine(destinationDir, entry.FullName);
+						var destinationFileName = Path.Combine(destinationDir, entry.FullName).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 						Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
 						entry.ExtractToFile(destinationFileName, true);
 						if(entry.FullName.Contains(".runtimeconfig.json"))
