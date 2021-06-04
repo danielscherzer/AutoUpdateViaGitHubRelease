@@ -15,6 +15,7 @@ namespace AutoUpdateViaGitHubRelease
 					foreach(var entry in zip.Entries)
 					{
 						var destinationFileName = Path.Combine(destinationDir, entry.FullName);
+						Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
 						entry.ExtractToFile(destinationFileName, true);
 						if(entry.FullName.Contains(".runtimeconfig.json"))
 						{
@@ -30,6 +31,7 @@ namespace AutoUpdateViaGitHubRelease
 			}
 		}
 
-		internal static bool ExtensionIs(this string fileName, string extensionLowerCase) => Path.GetExtension(fileName).ToLowerInvariant() == extensionLowerCase;
+		internal static bool ExtensionIs(this string fileName, string extensionLowerCase) 
+			=> Path.GetExtension(fileName).ToLowerInvariant() == extensionLowerCase;
 	}
 }

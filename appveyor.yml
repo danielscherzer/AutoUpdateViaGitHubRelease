@@ -26,9 +26,6 @@ build:
   verbosity: minimal              # MSBuild verbosity level
 
 artifacts:
-- path: UpdateWindow\bin\$(configuration)\net5.0-windows
-  name: UpdateWindow
-  type: zip
 - path: Installer\bin\$(configuration)\net5.0
   name: Installer
   type: zip

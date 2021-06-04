@@ -9,7 +9,7 @@ namespace AutoUpdateViaGitHubRelease
 		{
 			Directory.CreateDirectory(updateTempDir);
 			var latestReleaseJson = await gitHub.GetLatestReleaseJSONAsync("danielScherzer", "AutoUpdateViaGitHubRelease");
-			var urlUpdateInstaller = GitHubApi.ExtractDownloadUrl(latestReleaseJson);
+			var urlUpdateInstaller = GitHubApi.ParseDownloadUrl(latestReleaseJson);
 			var installerFileName = Path.Combine(updateTempDir, Path.GetFileName(urlUpdateInstaller));
 			await gitHub.DownloadFile(urlUpdateInstaller, installerFileName);
 			if (installerFileName.ExtensionIs(".zip"))

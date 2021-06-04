@@ -28,10 +28,10 @@ namespace AutoUpdateViaGitHubRelease
 			}
 		}
 
-		public static string ExtractDownloadUrl(JObject json) 
+		public static string ParseDownloadUrl(JObject json) 
 			=> json["assets"][0]["browser_download_url"].ToObject<string>();
 
-		public static Version ExtractVersion(JObject json) 
+		public static Version ParseVersion(JObject json) 
 			=> new Version(json["name"].ToObject<string>());
 
 		public async Task<JObject> GetJSONAsync(string gitHubDirectory) 

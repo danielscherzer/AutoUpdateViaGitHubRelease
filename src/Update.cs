@@ -21,12 +21,12 @@ namespace AutoUpdateViaGitHubRelease
 				try
 				{
 					var latestReleaseJson = await gitHub.GetLatestReleaseJSONAsync(user, repository);
-					var version = GitHubApi.ExtractVersion(latestReleaseJson);
+					var version = GitHubApi.ParseVersion(latestReleaseJson);
 					if (version > currentVersion)
 					{
 						//Get update installer that will extract the update archive to the application directory
 						installer = await gitHub.ExtractInstallerTo(tempDir);
-						var updateUrl = GitHubApi.ExtractDownloadUrl(latestReleaseJson);
+						var updateUrl = GitHubApi.ParseDownloadUrl(latestReleaseJson);
 						updateArchiveFileName = Path.Combine(tempDir, Path.GetFileName(updateUrl));
 						//new version download
 						await gitHub.DownloadFile(updateUrl, updateArchiveFileName);

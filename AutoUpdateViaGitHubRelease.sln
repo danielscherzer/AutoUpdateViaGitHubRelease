@@ -1,7 +1,6 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31313.79
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoUpdateViaGitHubRelease", "src\AutoUpdateViaGitHubRelease.csproj", "{12212521-A129-41AE-B5C8-2373754BD5E3}"
 EndProject
@@ -11,15 +10,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		CHANGELOG.md = CHANGELOG.md
 		CONTRIBUTING.md = CONTRIBUTING.md
 		ISSUE_TEMPLATE.md = ISSUE_TEMPLATE.md
-		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpdateWindow", "UpdateWindow\UpdateWindow.csproj", "{E3A9902F-A0F6-4FBD-A7EC-7BA45BD7CA6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UpdateWindow", "UpdateWindow\UpdateWindow.csproj", "{E3A9902F-A0F6-4FBD-A7EC-7BA45BD7CA6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{7A691D11-F3E1-4855-8A77-46B089010183}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{7A691D11-F3E1-4855-8A77-46B089010183}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Installer", "Installer\Installer.csproj", "{780B3851-AF1C-42B3-855B-E83F88D475EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Installer", "Installer\Installer.csproj", "{780B3851-AF1C-42B3-855B-E83F88D475EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

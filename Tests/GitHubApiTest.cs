@@ -1,7 +1,6 @@
 ﻿using AutoUpdateViaGitHubRelease;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,41 +9,47 @@ namespace UnitTestProject
 	[TestClass]
 	public class GitHubApiTest
 	{
+		private const string user = "danielScherzer";
+		private const string repo = "AutoUpdateViaGitHubRelease";
+
 		[TestMethod]
 		public void ParseVersion()
 		{
 			var gitHub = new GitHubApi();
-			var task = Task.Run(() => gitHub.GetLatestReleaseJSONAsync("danielScherzer", "AutoUpdateViaGitHubRelease"));
-			task.Wait();
+			var task = Task.Run(() => gitHub.GetLatestReleaseJSONAsync(user, repo));
 			var json = task.Result;
-			var version = GitHubApi.ExtractVersion(json);
+			var version = GitHubApi.ParseVersion(json);
 			Assert.AreNotEqual(0, version.Build);
 		}
 
-		//[TestMethod]
-		//public void ParseDownloadUrl()
-		//{
-		//	var gitHub = new GitHubApi();
-		//	var task = Task.Run(() => gitHub.GetLatestReleaseJSONAsync("danielScherzer", "AutoUpdateViaGitHubRelease"));
-		//	task.Wait();
-		//	var json = task.Result;
-		//	var url = GitHubApi.ExtractDownloadUrl(json);
-		//	Assert.AreNotEqual(0, url.Length);
-		//}
-		//[TestMethod]
-		//public void DownloadInstaller()
-		//{
-		//	var result = HelperDownloadInstaller();
-		//	Assert.IsTrue(result.Length > 0);
-		//}
+		[TestMethod]
+		public void ParseDownloadUrl()
+		{
+			var gitHub = new GitHubApi();
+			var task = Task.Run(() => gitHub.GetLatestReleaseJSONAsync(user, repo));
+			var json = task.Result;
+			var url = GitHubApi.ParseDownloadUrl(json);
+			Assert.AreNotEqual(0, url.Length);
+		}
 
-		//[TestMethod]
-		//public void DownloadNewVersion()
-		//{
-		//	var update = HelperUpdateCheck();
-		//	update.DownloadTask.Wait();
-		//	Assert.IsTrue(update.Available);
-		//}
+		[TestMethod]
+		public void DownloadInstaller()
+		{
+			var gitHub = new GitHubApi();
+			string tempDir = TempDir();
+			var task = Task.Run(() => gitHub.ExtractInstallerTo(tempDir));
+			var installerZip = task.Result;
+			var ext = Path.GetExtension(installerZip).ToLowerInvariant();
+			Assert.IsTrue(ext == ".dll" || ext == ".exe");
+		}
+
+		[TestMethod]
+		public void DownloadNewVersion()
+		{
+			var update = HelperUpdateCheck();
+			update.DownloadTask.Wait();
+			Assert.IsTrue(update.Available);
+		}
 
 		[TestMethod]
 		public void Install()
@@ -54,23 +59,12 @@ namespace UnitTestProject
 			update.Install();
 		}
 
-		private static string TempDir() => Path.Combine(Path.GetTempPath(), "AutoUpdateViaGitHubRelease");
-
-		private static string HelperDownloadInstaller()
-		{
-			var gitHub = new GitHubApi();
-			string tempDir = TempDir();
-			Directory.CreateDirectory(tempDir);
-			var task = Task.Run(() => gitHub.ExtractInstallerTo(tempDir));
-			task.Wait();
-			return task.Result;
-		}
+		private static string TempDir() => Path.Combine(Path.GetTempPath(), repo);
 
 		private static Update HelperUpdateCheck()
 		{
-			SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
 			var tempDir = TempDir();
-			var update = new Update("danielScherzer", "AutoUpdateViaGitHubRelease", new System.Version(0, 0), tempDir, "destination");
+			var update = new Update(user, repo, new System.Version(0, 0), tempDir, "destination");
 			return update;
 		}
 	}
