@@ -39,7 +39,12 @@ namespace AutoUpdateViaGitHubRelease
 					return false;
 				}
 			}
-			var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+			TaskScheduler scheduler = TaskScheduler.Default;
+			try
+			{
+				scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+			}
+			catch { }
 			DownloadTask = Task.Run(DownloadNewVersion)
 				.ContinueWith(task => Available = task.Result, scheduler);
 		}

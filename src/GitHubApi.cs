@@ -28,13 +28,17 @@ namespace AutoUpdateViaGitHubRelease
 			}
 		}
 
-		public static string ExtractDownloadUrl(JObject json) => json["assets"][0]["browser_download_url"].ToObject<string>();
+		public static string ExtractDownloadUrl(JObject json) 
+			=> json["assets"][0]["browser_download_url"].ToObject<string>();
 
-		public static Version ExtractVersion(JObject json) => new Version(json["name"].ToObject<string>());
+		public static Version ExtractVersion(JObject json) 
+			=> new Version(json["name"].ToObject<string>());
 
-		public async Task<JObject> GetJSONAsync(string gitHubDirectory) => JObject.Parse(await client.GetStringAsync($"https://api.github.com/{gitHubDirectory}"));
+		public async Task<JObject> GetJSONAsync(string gitHubDirectory) 
+			=> JObject.Parse(await client.GetStringAsync($"https://api.github.com/{gitHubDirectory}"));
 
-		public async Task<JObject> GetLatestReleaseJSONAsync(string user, string repository) => await GetJSONAsync($"repos/{user}/{repository}/releases/latest");
+		public async Task<JObject> GetLatestReleaseJSONAsync(string user, string repository) 
+			=> await GetJSONAsync($"repos/{user}/{repository}/releases/latest");
 
 
 		private readonly HttpClient client = new HttpClient();

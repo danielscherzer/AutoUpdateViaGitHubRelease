@@ -26,9 +26,10 @@ build:
   verbosity: minimal              # MSBuild verbosity level
 
 artifacts:
-- path: UpdateWindow\bin\$(configuration)\UpdateWindow.exe
+- path: UpdateWindow\bin\$(configuration)\net5.0-windows
   name: UpdateWindow
-- path: Installer\bin\$(configuration)\netcoreapp2.0
+  type: zip
+- path: Installer\bin\$(configuration)\net5.0
   name: Installer
   type: zip
 

@@ -11,7 +11,7 @@ namespace UnitTestProject
 	public class GitHubApiTest
 	{
 		[TestMethod]
-		public void ParseGitHubJson()
+		public void ParseVersion()
 		{
 			var gitHub = new GitHubApi();
 			var task = Task.Run(() => gitHub.GetLatestReleaseJSONAsync("danielScherzer", "AutoUpdateViaGitHubRelease"));
@@ -19,24 +19,32 @@ namespace UnitTestProject
 			var json = task.Result;
 			var version = GitHubApi.ExtractVersion(json);
 			Assert.AreNotEqual(0, version.Build);
-			var url = GitHubApi.ExtractDownloadUrl(json);
-			Assert.AreNotEqual(0, url.Length);
 		}
 
-		[TestMethod]
-		public void DownloadInstaller()
-		{
-			var result = HelperDownloadInstaller();
-			Assert.IsTrue(result.Length > 0);
-		}
+		//[TestMethod]
+		//public void ParseDownloadUrl()
+		//{
+		//	var gitHub = new GitHubApi();
+		//	var task = Task.Run(() => gitHub.GetLatestReleaseJSONAsync("danielScherzer", "AutoUpdateViaGitHubRelease"));
+		//	task.Wait();
+		//	var json = task.Result;
+		//	var url = GitHubApi.ExtractDownloadUrl(json);
+		//	Assert.AreNotEqual(0, url.Length);
+		//}
+		//[TestMethod]
+		//public void DownloadInstaller()
+		//{
+		//	var result = HelperDownloadInstaller();
+		//	Assert.IsTrue(result.Length > 0);
+		//}
 
-		[TestMethod]
-		public void DownloadNewVersion()
-		{
-			var update = HelperUpdateCheck();
-			update.DownloadTask.Wait();
-			Assert.IsTrue(update.Available);
-		}
+		//[TestMethod]
+		//public void DownloadNewVersion()
+		//{
+		//	var update = HelperUpdateCheck();
+		//	update.DownloadTask.Wait();
+		//	Assert.IsTrue(update.Available);
+		//}
 
 		[TestMethod]
 		public void Install()
