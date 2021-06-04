@@ -39,8 +39,9 @@ namespace AutoUpdateViaGitHubRelease
 					return false;
 				}
 			}
+			var scheduler = TaskScheduler.FromCurrentSynchronizationContext();
 			DownloadTask = Task.Run(DownloadNewVersion)
-				.ContinueWith(task => Available = task.Result, TaskScheduler.FromCurrentSynchronizationContext());
+				.ContinueWith(task => Available = task.Result, scheduler);
 		}
 
 		public Update(string user, string repository, Assembly assembly, string tempDir)
