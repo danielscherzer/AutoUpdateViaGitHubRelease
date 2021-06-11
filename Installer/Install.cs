@@ -15,14 +15,14 @@ namespace Installer
 
 		private void Log(string message) => logger.Log(message);
 
-		internal void Execute(string applicationDir, string updateDataArchive)
+		internal bool Execute(string applicationDir, string updateDataArchive)
 		{
 			Directory.CreateDirectory(applicationDir);
 			logger.LogFileName = Path.Combine(applicationDir, Path.GetFileName(logger.LogFileName));
 			if (!File.Exists(updateDataArchive))
 			{
 				logger.Log($"{nameof(updateDataArchive)}='{updateDataArchive}' does not exist.");
-				return;
+				return false;
 			}
 
 			using (var file = File.OpenRead(updateDataArchive))
@@ -32,7 +32,8 @@ namespace Installer
 					using var zip = new ZipArchive(file, ZipArchiveMode.Read);
 					foreach (var entry in zip.Entries)
 					{
-						var destinationFile = Path.Combine(applicationDir, entry.FullName);
+						string destinationFile = FullFileName(applicationDir, entry.FullName);
+						Directory.CreateDirectory(Path.GetDirectoryName(destinationFile));
 						TryDeleteWait(destinationFile);
 						Log($"Creating new {destinationFile}");
 						try
@@ -43,13 +44,13 @@ namespace Installer
 						{
 							//file still in use, no permission -> stop
 							Log($"Error creating new {destinationFile}");
-							return;
+							return false;
 						}
 					}
 				}
 				catch
 				{
-					var destinationFile = Path.Combine(applicationDir, Path.GetFileName(updateDataArchive));
+					string destinationFile = FullFileName(applicationDir, Path.GetFileName(updateDataArchive));
 					TryDeleteWait(destinationFile);
 					Log($"Creating new {destinationFile}");
 					try
@@ -61,11 +62,17 @@ namespace Installer
 					{
 						//file still in use, no permission -> stop
 						Log($"Error creating new {destinationFile}");
-						return;
+						return false;
 					}
 				}
 			}
 			Log($"Update Finished");
+			return true;
+
+			static string FullFileName(string applicationDir, string name)
+			{
+				return Path.Combine(applicationDir, name).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+			}
 		}
 
 		private bool TryDeleteWait(string destinationFile, int tries = 10, int waitTimeMsec = 1000)

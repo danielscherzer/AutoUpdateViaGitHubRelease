@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AutoUpdateViaGitHubRelease
@@ -11,9 +12,9 @@ namespace AutoUpdateViaGitHubRelease
 	{
 		public Update(string user, string repository, Version currentVersion, string tempDir, string destinationDir)
 		{
-			this.tempDir = tempDir;
+			TempDir = tempDir;
 			Directory.CreateDirectory(tempDir);
-			this.destinationDir = destinationDir;
+			DestinationDir = destinationDir;
 			Directory.CreateDirectory(destinationDir);
 			gitHub = new GitHubApi();
 			async Task<bool> DownloadNewVersion()
@@ -25,11 +26,11 @@ namespace AutoUpdateViaGitHubRelease
 					if (version > currentVersion)
 					{
 						//Get update installer that will extract the update archive to the application directory
-						installer = await gitHub.ExtractInstallerTo(tempDir);
+						Installer = await gitHub.ExtractInstallerToAsync(tempDir);
 						var updateUrl = GitHubApi.ParseDownloadUrl(latestReleaseJson);
-						updateArchiveFileName = Path.Combine(tempDir, Path.GetFileName(updateUrl));
+						UpdateArchiveFileName = Path.Combine(tempDir, Path.GetFileName(updateUrl));
 						//new version download
-						await gitHub.DownloadFile(updateUrl, updateArchiveFileName);
+						await gitHub.DownloadFile(updateUrl, UpdateArchiveFileName);
 						return true;
 					}
 					return false;
@@ -39,33 +40,26 @@ namespace AutoUpdateViaGitHubRelease
 					return false;
 				}
 			}
-			TaskScheduler scheduler = TaskScheduler.Default;
-			try
-			{
-				scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-			}
-			catch { }
-			DownloadTask = Task.Run(DownloadNewVersion)
-				.ContinueWith(task => Available = task.Result, scheduler);
+			synchronizationContext = SynchronizationContext.Current;
+			taskDownloadNewVersion = Task.Run(DownloadNewVersion)
+				.ContinueWith(task => AvailableChanged(task.Result));
 		}
 
 		public Update(string user, string repository, Assembly assembly, string tempDir)
 			: this(user, repository, assembly.GetName().Version, tempDir, Path.GetDirectoryName(assembly.Location)) { }
 
-			public Update(string user, string repository, Assembly assembly)
+		public Update(string user, string repository, Assembly assembly)
 			: this(user, repository, assembly, Path.Combine(Path.GetTempPath(), nameof(repository))) { }
 
-		public bool Available
-		{
-			get => _available;
-			private set
-			{
-				_available = value;
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Available)));
-			}
-		}
+		public bool Available => taskDownloadNewVersion.Result;
 
-		public Task<bool> DownloadTask { get; }
+		public string DestinationDir { get; }
+
+		public string TempDir { get; }
+
+		public string UpdateArchiveFileName { get; set; }
+
+		public string Installer { get; set; }
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -78,15 +72,15 @@ namespace AutoUpdateViaGitHubRelease
 					//string Quote(string input) => $"\"{input}\"";
 					
 					string Quote(string input) => input;
-					var isExe = installer.ExtensionIs(".exe");
-					var arg0 = isExe ? string.Empty : installer;
+					var isExe = Installer.ExtensionIs(".exe");
+					var arg0 = isExe ? string.Empty : Installer;
 					var process = new Process
 					{
 						StartInfo = new ProcessStartInfo
 						{
-							FileName = isExe ? installer : "dotnet",
-							Arguments = $"{arg0} {Quote(updateArchiveFileName)} {Quote(destinationDir)}",
-							WorkingDirectory = tempDir,
+							FileName = isExe ? Installer : "dotnet",
+							Arguments = $"{arg0} {Quote(UpdateArchiveFileName)} {Quote(DestinationDir)}",
+							WorkingDirectory = TempDir,
 							RedirectStandardOutput = false,
 							RedirectStandardError = false,
 						}
@@ -102,10 +96,21 @@ namespace AutoUpdateViaGitHubRelease
 		}
 
 		private readonly GitHubApi gitHub;
-		private readonly string tempDir;
-		private readonly string destinationDir;
-		private bool _available = false;
-		private string installer;
-		private string updateArchiveFileName;
+		private readonly SynchronizationContext synchronizationContext;
+		private readonly Task<bool> taskDownloadNewVersion;
+
+		private bool AvailableChanged(bool result)
+		{
+			if (PropertyChanged is null) return result;
+			TaskScheduler scheduler = TaskScheduler.Default;
+			try
+			{
+				scheduler = TaskScheduler.FromCurrentSynchronizationContext();
+			}
+			catch { }
+			//synchronizationContext.
+//			Task.Run(() => PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(Available))), scheduler);
+			return result;
+		}
 	}
 }
