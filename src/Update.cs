@@ -27,7 +27,7 @@ namespace AutoUpdateViaGitHubRelease
 				user, repository, currentVersion, updateArchiveFileName);
 
 			var taskInstall = UpdateTools.DownloadExtractInstallerToAsync(tempDir);
-			installerName = await taskInstall;
+			installerName = Path.Combine(tempDir, await taskInstall);
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Available)));
 			return Available;
 		}

@@ -18,10 +18,20 @@ namespace AutoUpdateViaGitHubRelease.Tests
 			var tempDir = Path.Combine(Path.GetTempPath(), nameof(AutoUpdateViaGitHubRelease));
 			var result = update.CheckDownloadNewVersionAsync(GitHubApiTest.User
 				, GitHubApiTest.Repo, version, tempDir).Result;
-			Assert.IsTrue(update.Available);
+
+			var gitHub = new GitHubApi();
+			var latestReleaseJson = gitHub.GetLatestReleaseJSONAsync(GitHubApiTest.User
+				, GitHubApiTest.Repo).Result;
+			var latestVersion = GitHubApi.ParseVersion(latestReleaseJson);
+
+			Assert.AreEqual(update.Available, version < latestVersion);
 			Assert.AreEqual(result, update.Available);
-			var destinationDir = Path.Combine(tempDir, "install");
-			Assert.IsTrue(update.Install(destinationDir).Result);
+			if(update.Available)
+			{
+				var destinationDir = Path.Combine(tempDir, "install");
+				Assert.IsTrue(update.Install(destinationDir).Result);
+
+			}
 		}
 
 		private void Update_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
