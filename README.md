@@ -13,7 +13,7 @@ This is a .net standard class library that allows application to update themselv
 ## Usage
 You can use the methods from the `UpdateTools` class or use the `Update` class if you need `INotifyPropertyChanged`.
 
-```
+```C#
 using AutoUpdateViaGitHubRelease;
 ...
 var update = new Update();
