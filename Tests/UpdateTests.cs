@@ -38,7 +38,6 @@ namespace AutoUpdateViaGitHubRelease.Tests
 		{
 			Assert.AreEqual(e.PropertyName, nameof(Update.Available));
 			Assert.IsInstanceOfType(sender, typeof(Update));
-			Assert.IsTrue((sender as Update)?.Available);
 		}
 	}
 }
