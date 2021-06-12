@@ -18,11 +18,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>D:\Daten\C#\_libs\AutoUpdateViaGitHubRelease\src\AutoUpdateViaGitHubRelease.xml</DocumentationFile>
+    <DocumentationFile>AutoUpdateViaGitHubRelease.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>D:\Daten\C#\_libs\AutoUpdateViaGitHubRelease\src\AutoUpdateViaGitHubRelease.xml</DocumentationFile>
+    <DocumentationFile>AutoUpdateViaGitHubRelease.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
