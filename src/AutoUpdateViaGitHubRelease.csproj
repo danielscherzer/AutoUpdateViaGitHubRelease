@@ -17,6 +17,14 @@
     <PackageTags>application update tool</PackageTags>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>D:\Daten\C#\_libs\AutoUpdateViaGitHubRelease\src\AutoUpdateViaGitHubRelease.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>D:\Daten\C#\_libs\AutoUpdateViaGitHubRelease\src\AutoUpdateViaGitHubRelease.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>

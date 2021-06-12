@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
+using System.Reflection;
 
 namespace AutoUpdateViaGitHubRelease.Tests
 {
@@ -26,7 +27,34 @@ namespace AutoUpdateViaGitHubRelease.Tests
 			string tempDir = TempDir();
 			Directory.CreateDirectory(tempDir);
 			var destFile = Path.Combine(tempDir, "Update.zip");
-			var downloadOk = UpdateTools.CheckDownloadNewVersionAsync(UpdateTools.User, UpdateTools.Repo, new System.Version(0, 0), destFile).Result;
+			var downloadOk = UpdateTools.CheckDownloadNewVersionAsync(GitHubApiTest.User, GitHubApiTest.Repo, new System.Version(999, 0), destFile).Result;
+			Assert.IsFalse(downloadOk);
+			Assert.IsFalse(File.Exists(destFile));
+			Directory.Delete(tempDir, true);
+		}
+
+		[TestMethod()]
+		public void CheckDownloadNewVersionForVersionedBackup()
+		{
+			string tempDir = TempDir();
+			Directory.CreateDirectory(tempDir);
+			var destFile = Path.Combine(tempDir, "Update.zip");
+			var downloadOk = UpdateTools.CheckDownloadNewVersionAsync(GitHubApiTest.User
+				, "VersionedBackup", new System.Version(0, 1), destFile).Result;
+			Assert.IsTrue(downloadOk);
+			Assert.IsTrue(File.Exists(destFile));
+			Directory.Delete(tempDir, true);
+		}
+
+		[TestMethod()]
+		public void CheckDownloadNewVersionAssembly()
+		{
+			string tempDir = TempDir();
+			Directory.CreateDirectory(tempDir);
+			var destFile = Path.Combine(tempDir, "Update.zip");
+			var assembly = Assembly.GetExecutingAssembly();
+			var downloadOk = UpdateTools.CheckDownloadNewVersionAsync(GitHubApiTest.User
+				, GitHubApiTest.Repo, assembly, destFile).Result;
 			Assert.IsTrue(downloadOk);
 			Assert.IsTrue(File.Exists(destFile));
 			Directory.Delete(tempDir, true);
@@ -39,7 +67,7 @@ namespace AutoUpdateViaGitHubRelease.Tests
 			Directory.CreateDirectory(tempDir);
 			string installerName = Path.Combine(tempDir, UpdateTools.DownloadExtractInstallerToAsync(tempDir).Result);
 			var updateArchiveFileName = Path.Combine(tempDir, "Update.zip");
-			var downloadOk = UpdateTools.CheckDownloadNewVersionAsync(UpdateTools.User, UpdateTools.Repo, new System.Version(0, 0), updateArchiveFileName).Result;
+			var downloadOk = UpdateTools.CheckDownloadNewVersionAsync(GitHubApiTest.User, GitHubApiTest.Repo, new System.Version(0, 0), updateArchiveFileName).Result;
 			Assert.IsTrue(downloadOk);
 			var installDir = Path.Combine(tempDir, "install");
 			var result = UpdateTools.InstallAsync(installerName, updateArchiveFileName, installDir).Result;

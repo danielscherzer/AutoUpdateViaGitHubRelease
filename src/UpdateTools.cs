@@ -1,56 +1,27 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace AutoUpdateViaGitHubRelease
 {
+	/// <summary>
+	/// Helper methods for updating your application
+	/// </summary>
 	public static class UpdateTools
 	{
-		public const string User = "danielScherzer";
-		public const string Repo = "AutoUpdateViaGitHubRelease";
-
-		public static async Task<string> ExtractInstallerToAsync(this GitHubApi gitHub, string destination)
+		/// <summary>
+		/// Check if a new version is available on github. If it is download it.
+		/// </summary>
+		/// <param name="user">github user name</param>
+		/// <param name="repository">github repository name</param>
+		/// <param name="assembly">The assembly that should be updated.</param>
+		/// <param name="destinationFile">destination name of the update file</param>
+		/// <returns><see langword="true"/> if a new version is available, otherwise <see langword="false"/></returns>
+		public static async Task<bool> CheckDownloadNewVersionAsync(string user, string repository, Assembly assembly, string destinationFile)
 		{
-			Directory.CreateDirectory(destination);
-			var latestReleaseJson = await gitHub.GetLatestReleaseJSONAsync(User, Repo);
-			var urlInstaller = GitHubApi.ParseDownloadUrl(latestReleaseJson);
-			var installerFileName = Path.Combine(destination, Path.GetFileName(urlInstaller));
-			await gitHub.DownloadFile(urlInstaller, installerFileName);
-			if (installerFileName.ExtensionIs(".zip"))
-			{
-				var installer = ZipExtensions.ExtractOverwriteInstallerToDirectory(installerFileName, destination);
-				try { File.Delete(installerFileName); } catch { }
-				return installer;
-			}
-			else
-			{
-				return installerFileName;
-			}
-		}
-
-		public static async Task<string> DownloadInstallerAsync(this GitHubApi gitHub, string destination)
-		{
-			var latestReleaseJson = await gitHub.GetLatestReleaseJSONAsync(User, Repo);
-			var urlInstaller = GitHubApi.ParseDownloadUrl(latestReleaseJson);
-			var installerFileName = Path.Combine(destination, Path.GetFileName(urlInstaller));
-			await gitHub.DownloadFile(urlInstaller, installerFileName);
-			return installerFileName;
-		}
-
-		public static string ExtractInstaller(this string installerFileName, string destination)
-		{
-			if (installerFileName.ExtensionIs(".zip"))
-			{
-				var installer = ZipExtensions.ExtractOverwriteInstallerToDirectory(installerFileName, destination);
-				try { File.Delete(installerFileName); } catch { }
-				return installer;
-			}
-			else
-			{
-				return installerFileName;
-			}
-
+			return await CheckDownloadNewVersionAsync(user, repository, assembly.GetName().Version, destinationFile);
 		}
 
 		/// <summary>
@@ -60,15 +31,17 @@ namespace AutoUpdateViaGitHubRelease
 		/// <param name="repository">github repository name</param>
 		/// <param name="currentVersion">Version to compare against</param>
 		/// <param name="destinationFile">destination name of the update file</param>
-		/// <returns><c>true</c> if a new version is available, otherwise <c>false</c></returns>
-		public static async Task<bool> CheckDownloadNewVersionAsync(string user, string repository, Version currentVersion, string destinationFile)
+		/// <param name="logger">An optional logger.</param>
+		/// <returns><see langword="true"/> if a new version is available, otherwise <see langword="false"/></returns>
+		public static async Task<bool> CheckDownloadNewVersionAsync(string user, string repository, Version currentVersion, string destinationFile, Logger logger = null)
 		{
+			if (logger is null) logger = new Logger(Path.ChangeExtension(destinationFile, ".log"));
 			var gitHub = new GitHubApi();
 			try
 			{
 				var latestReleaseJson = await gitHub.GetLatestReleaseJSONAsync(user, repository);
 				var version = GitHubApi.ParseVersion(latestReleaseJson);
-				Debug.WriteLine($"Latest version on github {version}");
+				logger.Log($"Comparing {currentVersion} with latest version on github {version}");
 				if (version > currentVersion)
 				{
 					var updateUrl = GitHubApi.ParseDownloadUrl(latestReleaseJson);
@@ -80,11 +53,16 @@ namespace AutoUpdateViaGitHubRelease
 			}
 			catch(Exception e)
 			{
-				Debug.WriteLine(e.Message);
+				logger.Log(e.Message);
 				return false;
 			}
 		}
 
+		/// <summary>
+		/// Downloads and extracts the installer into the given directory
+		/// </summary>
+		/// <param name="destinationDir">Directory to extract the installer to.</param>
+		/// <returns>The name of the installer, if all was successfull.</returns>
 		public static async Task<string> DownloadExtractInstallerToAsync(string destinationDir)
 		{
 			var gitHub = new GitHubApi();
@@ -100,6 +78,13 @@ namespace AutoUpdateViaGitHubRelease
 			}
 		}
 
+		/// <summary>
+		/// Install the update. <see cref="CheckDownloadNewVersionAsync(string, string, Assembly, string)"/> has to be called otherwise no update can be available.
+		/// </summary>
+		/// <param name="installer">The installer file name.</param>
+		/// <param name="updateArchiveFileName">The update archive file name.</param>
+		/// <param name="destinationDir">The destination to install to.</param>
+		/// <returns><see langword="true"/> if the update was successfull.</returns>
 		public static async Task<bool> InstallAsync(string installer, string updateArchiveFileName, string destinationDir)
 		{
 //			string Quote(string input) => $"\"{input}\"";
@@ -124,6 +109,32 @@ namespace AutoUpdateViaGitHubRelease
 					process.WaitForExit();
 				});
 			return 0 == process.ExitCode;
+		}
+
+		private const string user = "danielScherzer";
+		private const string repo = "AutoUpdateViaGitHubRelease";
+
+		private static async Task<string> DownloadInstallerAsync(this GitHubApi gitHub, string destination)
+		{
+			var latestReleaseJson = await gitHub.GetLatestReleaseJSONAsync(user, repo);
+			var urlInstaller = GitHubApi.ParseDownloadUrl(latestReleaseJson);
+			var installerFileName = Path.Combine(destination, Path.GetFileName(urlInstaller));
+			await gitHub.DownloadFile(urlInstaller, installerFileName);
+			return installerFileName;
+		}
+
+		private static string ExtractInstaller(this string installerFileName, string destination)
+		{
+			if (installerFileName.ExtensionIs(".zip"))
+			{
+				var installer = ZipExtensions.ExtractOverwriteInstallerToDirectory(installerFileName, destination);
+				try { File.Delete(installerFileName); } catch { }
+				return installer;
+			}
+			else
+			{
+				return installerFileName;
+			}
 		}
 	}
 }

@@ -11,15 +11,26 @@ This is a .net standard class library that allows application to update themselv
 - The latest version of your application is deployed as a GitHub release.
 
 ## Usage
-1. Create an instance of the `Updater` class
-2. If you want to do an immediate update call `update` with your GitHub user name and the repository with the latest release you want to update to.
+You can use the methods from the `UpdateTools` class or use the `Update` class if you need `INotifyPropertyChanged`.
 
 ```
 using AutoUpdateViaGitHubRelease;
 ...
-var updater = new Updater();
-var currentVersion = Assembly.GetEntryAssembly().GetName().Version;
-var newVersionAvailable = await updater.DownloadNewVersion("your user name", "your repository", currentVersion, Path.GetTempPath());
+var update = new Update();
+update.PropertyChanged += Update_PropertyChanged;
+var assembly = Assembly.GetExecutingAssembly();
+var version = assembly.GetName().Version;
+update.CheckDownloadNewVersionAsync(GitHubUser, GitHubRepo, version, tempDir);
+...
+private void Update_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+{
+	if(update.Available)
+	{
+		var destinationDir = Path.GetDirectory(assembly.Location);
+		update.Install(destinationDir);
+		Application.Close();
+	}
+}
 ```
 
 

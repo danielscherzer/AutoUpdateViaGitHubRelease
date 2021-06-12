@@ -1,4 +1,5 @@
-﻿using Installer;
+﻿using AutoUpdateViaGitHubRelease;
+using Installer;
 using System;
 using System.IO;
 using System.Reflection;

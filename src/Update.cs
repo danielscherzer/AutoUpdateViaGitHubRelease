@@ -1,93 +1,58 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
-using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace AutoUpdateViaGitHubRelease
 {
+	/// <summary>
+	/// class that handles update and implements <see cref="INotifyPropertyChanged"/>
+	/// </summary>
 	public class Update : INotifyPropertyChanged
 	{
-		public Update(string user, string repository, Version currentVersion, string tempDir, string destinationDir)
+		/// <summary>
+		/// Check if an update is available and download it and the installer if this is the case
+		/// </summary>
+		/// <param name="user">github user name</param>
+		/// <param name="repository">github repository name</param>
+		/// <param name="currentVersion">Current version of application.</param>
+		/// <param name="tempDir">The directory were temporary files should be stored</param>
+		/// <returns><see langword="true"/> if a new version is available, otherwise <see langword="false"/></returns>
+		public async Task<bool> CheckDownloadNewVersionAsync(string user, string repository
+			, Version currentVersion, string tempDir)
 		{
-			TempDir = tempDir;
 			Directory.CreateDirectory(tempDir);
-			DestinationDir = destinationDir;
-			Directory.CreateDirectory(destinationDir);
-			gitHub = new GitHubApi();
-			async Task<bool> DownloadNewVersion()
-			{
-				try
-				{
-					var latestReleaseJson = await gitHub.GetLatestReleaseJSONAsync(user, repository);
-					var version = GitHubApi.ParseVersion(latestReleaseJson);
-					if (version > currentVersion)
-					{
-						//Get update installer that will extract the update archive to the application directory
-						Installer = await gitHub.ExtractInstallerToAsync(tempDir);
-						var updateUrl = GitHubApi.ParseDownloadUrl(latestReleaseJson);
-						UpdateArchiveFileName = Path.Combine(tempDir, Path.GetFileName(updateUrl));
-						//new version download
-						await gitHub.DownloadFile(updateUrl, UpdateArchiveFileName);
-						return true;
-					}
-					return false;
-				}
-				catch
-				{
-					return false;
-				}
-			}
-			synchronizationContext = SynchronizationContext.Current;
-			taskDownloadNewVersion = Task.Run(DownloadNewVersion)
-				.ContinueWith(task => AvailableChanged(task.Result));
+			updateArchiveFileName = Path.Combine(tempDir, "update.zip");
+			Available = await UpdateTools.CheckDownloadNewVersionAsync(
+				user, repository, currentVersion, updateArchiveFileName);
+
+			var taskInstall = UpdateTools.DownloadExtractInstallerToAsync(tempDir);
+			installerName = await taskInstall;
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Available)));
+			return Available;
 		}
 
-		public Update(string user, string repository, Assembly assembly, string tempDir)
-			: this(user, repository, assembly.GetName().Version, tempDir, Path.GetDirectoryName(assembly.Location)) { }
+		/// <summary>
+		/// Is <see langword="true"/> if a new update is available.
+		/// </summary>
+		public bool Available { get; private set; } = false;
 
-		public Update(string user, string repository, Assembly assembly)
-			: this(user, repository, assembly, Path.Combine(Path.GetTempPath(), nameof(repository))) { }
-
-		public bool Available => taskDownloadNewVersion.Result;
-
-		public string DestinationDir { get; }
-
-		public string TempDir { get; }
-
-		public string UpdateArchiveFileName { get; set; }
-
-		public string Installer { get; set; }
-
+		/// <summary>
+		/// Event handler for <see cref="PropertyChangedEventHandler"/> events.
+		/// </summary>
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		public bool Install()
+		/// <summary>
+		/// Install the update. <see cref="CheckDownloadNewVersionAsync(string, string, Version, string)"/> has to be called otherwise no update can be available.
+		/// If you update the currently executing program. Do not wait for the install to finish,
+		/// but close the program.
+		/// </summary>
+		/// <returns><see langword="true"/> if the update was successfull.</returns>
+		public async Task<bool> Install(string destinationDir)
 		{
 			try
 			{
-				if (Available)
-				{
-					//string Quote(string input) => $"\"{input}\"";
-					
-					string Quote(string input) => input;
-					var isExe = Installer.ExtensionIs(".exe");
-					var arg0 = isExe ? string.Empty : Installer;
-					var process = new Process
-					{
-						StartInfo = new ProcessStartInfo
-						{
-							FileName = isExe ? Installer : "dotnet",
-							Arguments = $"{arg0} {Quote(UpdateArchiveFileName)} {Quote(DestinationDir)}",
-							WorkingDirectory = TempDir,
-							RedirectStandardOutput = false,
-							RedirectStandardError = false,
-						}
-					};
-					process.Start();
-				}
-				return Available;
+				return await UpdateTools.InstallAsync(installerName, updateArchiveFileName, destinationDir);
 			}
 			catch
 			{
@@ -95,22 +60,7 @@ namespace AutoUpdateViaGitHubRelease
 			}
 		}
 
-		private readonly GitHubApi gitHub;
-		private readonly SynchronizationContext synchronizationContext;
-		private readonly Task<bool> taskDownloadNewVersion;
-
-		private bool AvailableChanged(bool result)
-		{
-			if (PropertyChanged is null) return result;
-			TaskScheduler scheduler = TaskScheduler.Default;
-			try
-			{
-				scheduler = TaskScheduler.FromCurrentSynchronizationContext();
-			}
-			catch { }
-			//synchronizationContext.
-//			Task.Run(() => PropertyChanged.Invoke(this, new PropertyChangedEventArgs(nameof(Available))), scheduler);
-			return result;
-		}
+		private string installerName = string.Empty;
+		private string updateArchiveFileName = string.Empty;
 	}
 }

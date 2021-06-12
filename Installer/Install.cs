@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using AutoUpdateViaGitHubRelease;
+using System.IO;
 using System.IO.Compression;
 using System.Threading;
 
