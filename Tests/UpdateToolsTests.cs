@@ -55,8 +55,15 @@ namespace AutoUpdateViaGitHubRelease.Tests
 			var assembly = Assembly.GetExecutingAssembly();
 			var downloadOk = UpdateTools.CheckDownloadNewVersionAsync(GitHubApiTest.User
 				, GitHubApiTest.Repo, assembly, destFile).Result;
-			Assert.IsTrue(downloadOk);
-			Assert.IsTrue(File.Exists(destFile));
+
+			var version = assembly.GetName().Version;
+			var gitHub = new GitHubApi();
+			var latestReleaseJson = gitHub.GetLatestReleaseJSONAsync(GitHubApiTest.User
+				, GitHubApiTest.Repo).Result;
+			var latestVersion = GitHubApi.ParseVersion(latestReleaseJson);
+
+			Assert.AreEqual(downloadOk, version < latestVersion);
+			if(downloadOk) Assert.IsTrue(File.Exists(destFile));
 			Directory.Delete(tempDir, true);
 		}
 
