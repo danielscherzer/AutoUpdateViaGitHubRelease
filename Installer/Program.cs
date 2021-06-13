@@ -18,7 +18,7 @@ try
 	var updateDataArchive = args[0];
 	var applicationDir = args[1];
 	logger.Log($"Parameter are {nameof(updateDataArchive)}='{updateDataArchive}' and {nameof(applicationDir)}='{applicationDir}'");
-	if(!install.Execute(applicationDir, updateDataArchive)) Environment.ExitCode = 2;
+	if (!install.Execute(applicationDir, updateDataArchive)) Environment.ExitCode = 2;
 }
 catch (Exception ex)
 {

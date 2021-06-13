@@ -26,7 +26,7 @@ namespace AutoUpdateViaGitHubRelease.Tests
 
 			Assert.AreEqual(update.Available, version < latestVersion);
 			Assert.AreEqual(result, update.Available);
-			if(update.Available)
+			if (update.Available)
 			{
 				var destinationDir = Path.Combine(tempDir, "install");
 				Assert.IsTrue(update.Install(destinationDir).Result);

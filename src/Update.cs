@@ -26,8 +26,7 @@ namespace AutoUpdateViaGitHubRelease
 			Available = await UpdateTools.CheckDownloadNewVersionAsync(
 				user, repository, currentVersion, updateArchiveFileName);
 
-			var taskInstall = UpdateTools.DownloadExtractInstallerToAsync(tempDir);
-			installerName = Path.Combine(tempDir, await taskInstall);
+			installerName = await UpdateTools.DownloadExtractInstallerToAsync(tempDir);
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Available)));
 			return Available;
 		}

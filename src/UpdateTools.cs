@@ -51,7 +51,7 @@ namespace AutoUpdateViaGitHubRelease
 				}
 				return false;
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				logger.Log(e.Message);
 				return false;
@@ -87,7 +87,7 @@ namespace AutoUpdateViaGitHubRelease
 		/// <returns><see langword="true"/> if the update was successfull.</returns>
 		public static async Task<bool> InstallAsync(string installer, string updateArchiveFileName, string destinationDir)
 		{
-//			string Quote(string input) => $"\"{input}\"";
+			//			string Quote(string input) => $"\"{input}\"";
 
 			string Quote(string input) => input;
 			var isExe = installer.ExtensionIs(".exe");

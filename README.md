@@ -11,7 +11,7 @@ This is a .net standard class library that allows application to update themselv
 - The latest version of your application is deployed as a GitHub release.
 
 ## Usage
-You can use the methods from the `UpdateTools` class or use the `Update` class if you need `INotifyPropertyChanged`.
+1. You can use the `Update` class if you need `INotifyPropertyChanged`:
 
 ```C#
 using AutoUpdateViaGitHubRelease;
@@ -33,6 +33,32 @@ private void Update_PropertyChanged(object? sender, System.ComponentModel.Proper
 }
 ```
 
+2. If you want more control, you can use the methods from the `UpdateTools` class: 
+```C#
+using AutoUpdateViaGitHubRelease;
+...
+var assembly = Assembly.GetExecutingAssembly();
+var tempDir = Path.Combine(Path.GetTempPath(), nameof(ApplicationName));
+Directory.CreateDirectory(tempDir);
+var updateArchive = Path.Combine(tempDir, "update.zip");
+var updateTask = UpdateTools.CheckDownloadNewVersionAsync(GitHubUser, GitHubRepo, assembly.GetName().Version, updateArchive);
+... // application code
+var updateAvailable = updateTask.Result;
+if (updateAvailable)
+{
+	Console.Write("Update? (Y/N)");
+	if (ConsoleKey.Y == Console.ReadKey().Key)
+	{
+		var installer = Path.Combine(tempDir, UpdateTools.DownloadExtractInstallerToAsync(tempDir).Result);
+		var destinationDir = Path.GetDirectoryName(assembly.Location);
+		UpdateTools.InstallAsync(installer, updateArchive, destinationDir); // don't wait for install to finish!
+		//your application should close right after starting install
+		Environment.Exit(0);
+	}
+}
+
+
+```
 
 See the [change log](CHANGELOG.md) for changes and road map.
 

@@ -17,7 +17,7 @@ namespace AutoUpdateViaGitHubRelease.Tests
 			string installerName = UpdateTools.DownloadExtractInstallerToAsync(tempDir).Result;
 			var ext = Path.GetExtension(installerName).ToLowerInvariant();
 			Assert.IsTrue(ext == ".dll" || ext == ".exe");
-			Assert.IsTrue(File.Exists(Path.Combine(tempDir, installerName)));
+			Assert.IsTrue(File.Exists(installerName));
 			Directory.Delete(tempDir, true);
 		}
 
@@ -63,16 +63,16 @@ namespace AutoUpdateViaGitHubRelease.Tests
 			var latestVersion = GitHubApi.ParseVersion(latestReleaseJson);
 
 			Assert.AreEqual(downloadOk, version < latestVersion);
-			if(downloadOk) Assert.IsTrue(File.Exists(destFile));
+			if (downloadOk) Assert.IsTrue(File.Exists(destFile));
 			Directory.Delete(tempDir, true);
 		}
 
 		[TestMethod()]
-		public void Install()
+		public void AllSteps()
 		{
 			string tempDir = TempDir();
 			Directory.CreateDirectory(tempDir);
-			string installerName = Path.Combine(tempDir, UpdateTools.DownloadExtractInstallerToAsync(tempDir).Result);
+			string installerName = UpdateTools.DownloadExtractInstallerToAsync(tempDir).Result;
 			var updateArchiveFileName = Path.Combine(tempDir, "Update.zip");
 			var downloadOk = UpdateTools.CheckDownloadNewVersionAsync(GitHubApiTest.User, GitHubApiTest.Repo, new System.Version(0, 0), updateArchiveFileName).Result;
 			Assert.IsTrue(downloadOk);

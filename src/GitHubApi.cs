@@ -45,7 +45,7 @@ namespace AutoUpdateViaGitHubRelease
 		/// </summary>
 		/// <param name="json">JSON of the rest response.</param>
 		/// <returns>A download URL.</returns>
-		public static string ParseDownloadUrl(JObject json) 
+		public static string ParseDownloadUrl(JObject json)
 			=> json["assets"][0]["browser_download_url"].ToObject<string>();
 
 		/// <summary>
@@ -53,7 +53,7 @@ namespace AutoUpdateViaGitHubRelease
 		/// </summary>
 		/// <param name="json"></param>
 		/// <returns><see cref="Version"/></returns>
-		public static Version ParseVersion(JObject json) 
+		public static Version ParseVersion(JObject json)
 			=> new Version(json["name"].ToObject<string>());
 
 		/// <summary>
@@ -61,7 +61,7 @@ namespace AutoUpdateViaGitHubRelease
 		/// </summary>
 		/// <param name="gitHubDirectory">the github directory to query</param>
 		/// <returns></returns>
-		public async Task<JObject> GetJSONAsync(string gitHubDirectory) 
+		public async Task<JObject> GetJSONAsync(string gitHubDirectory)
 			=> JObject.Parse(await client.GetStringAsync($"https://api.github.com/{gitHubDirectory}"));
 
 		/// <summary>
@@ -70,7 +70,7 @@ namespace AutoUpdateViaGitHubRelease
 		/// <param name="user">Th github user.</param>
 		/// <param name="repository">The github repository.</param>
 		/// <returns></returns>
-		public async Task<JObject> GetLatestReleaseJSONAsync(string user, string repository) 
+		public async Task<JObject> GetLatestReleaseJSONAsync(string user, string repository)
 			=> await GetJSONAsync($"repos/{user}/{repository}/releases/latest");
 
 

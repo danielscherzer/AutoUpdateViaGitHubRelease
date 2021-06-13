@@ -12,18 +12,18 @@ namespace AutoUpdateViaGitHubRelease
 				using (var zip = new ZipArchive(file, ZipArchiveMode.Read))
 				{
 					var result = "";
-					foreach(var entry in zip.Entries)
+					foreach (var entry in zip.Entries)
 					{
 						var destinationFileName = Path.Combine(destinationDir, entry.FullName).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 						Directory.CreateDirectory(Path.GetDirectoryName(destinationFileName));
 						entry.ExtractToFile(destinationFileName, true);
-						if(entry.FullName.Contains(".runtimeconfig.json"))
+						if (entry.FullName.Contains(".runtimeconfig.json"))
 						{
-							result = entry.FullName.Replace(".runtimeconfig.json",".dll");
+							result = destinationFileName.Replace(".runtimeconfig.json", ".dll");
 						}
-						else if(entry.FullName.ExtensionIs(".exe"))
+						else if (entry.FullName.ExtensionIs(".exe"))
 						{
-							result = entry.FullName;
+							result = destinationFileName;
 						}
 					}
 					return result;
@@ -31,7 +31,7 @@ namespace AutoUpdateViaGitHubRelease
 			}
 		}
 
-		internal static bool ExtensionIs(this string fileName, string extensionLowerCase) 
+		internal static bool ExtensionIs(this string fileName, string extensionLowerCase)
 			=> Path.GetExtension(fileName).ToLowerInvariant() == extensionLowerCase;
 	}
 }
