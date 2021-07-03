@@ -29,8 +29,9 @@ namespace AutoUpdateViaGitHubRelease.Tests
 			if (update.Available)
 			{
 				var destinationDir = Path.Combine(tempDir, "install");
-				Assert.IsTrue(update.Install(destinationDir).Result);
-
+				var installProcess = update.StartInstall(destinationDir);
+				installProcess.WaitForExit();
+				Assert.AreEqual(0, installProcess.ExitCode);
 			}
 		}
 

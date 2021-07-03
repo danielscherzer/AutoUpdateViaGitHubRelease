@@ -85,7 +85,7 @@ namespace AutoUpdateViaGitHubRelease
 		/// <param name="updateArchiveFileName">The update archive file name.</param>
 		/// <param name="destinationDir">The destination to install to.</param>
 		/// <returns><see langword="true"/> if the update was successfull.</returns>
-		public static async Task<bool> InstallAsync(string installer, string updateArchiveFileName, string destinationDir)
+		public static Process StartInstall(string installer, string updateArchiveFileName, string destinationDir)
 		{
 			//			string Quote(string input) => $"\"{input}\"";
 
@@ -103,12 +103,8 @@ namespace AutoUpdateViaGitHubRelease
 					RedirectStandardError = false,
 				}
 			};
-			await Task.Run(() =>
-				{
-					process.Start();
-					process.WaitForExit();
-				});
-			return 0 == process.ExitCode;
+			process.Start();
+			return process;
 		}
 
 		private const string user = "danielScherzer";

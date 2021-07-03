@@ -77,8 +77,10 @@ namespace AutoUpdateViaGitHubRelease.Tests
 			var downloadOk = UpdateTools.CheckDownloadNewVersionAsync(GitHubApiTest.User, GitHubApiTest.Repo, new System.Version(0, 0), updateArchiveFileName).Result;
 			Assert.IsTrue(downloadOk);
 			var installDir = Path.Combine(tempDir, "install");
-			var result = UpdateTools.InstallAsync(installerName, updateArchiveFileName, installDir).Result;
-			Assert.IsTrue(result);
+			var installProcess = UpdateTools.StartInstall(installerName, updateArchiveFileName, installDir);
+			installProcess.WaitForExit();
+			Assert.AreEqual(0, installProcess.ExitCode);
+
 			Directory.Delete(tempDir, true);
 		}
 	}

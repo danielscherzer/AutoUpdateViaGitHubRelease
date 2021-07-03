@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -46,17 +47,9 @@ namespace AutoUpdateViaGitHubRelease
 		/// If you update the currently executing program. Do not wait for the install to finish,
 		/// but close the program.
 		/// </summary>
-		/// <returns><see langword="true"/> if the update was successfull.</returns>
-		public async Task<bool> Install(string destinationDir)
+		public Process StartInstall(string destinationDir)
 		{
-			try
-			{
-				return await UpdateTools.InstallAsync(installerName, updateArchiveFileName, destinationDir);
-			}
-			catch
-			{
-				return false;
-			}
+			return UpdateTools.StartInstall(installerName, updateArchiveFileName, destinationDir);
 		}
 
 		private string installerName = string.Empty;
