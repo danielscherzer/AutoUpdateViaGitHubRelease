@@ -84,14 +84,13 @@ namespace AutoUpdateViaGitHubRelease
 		/// <param name="installer">The installer file name.</param>
 		/// <param name="updateArchiveFileName">The update archive file name.</param>
 		/// <param name="destinationDir">The destination to install to.</param>
-		/// <exception cref="ArgumentException">If one of the argument files/directories does not exist.</exception>
+		/// <exception cref="ArgumentException">If one of the argument files does not exist.</exception>
 		/// <returns><see langword="true"/> If the update was successfull.</returns>
 		public static Process StartInstall(string installer, string updateArchiveFileName, string destinationDir)
 		{
 			//			string Quote(string input) => $"\"{input}\"";
 			if (!File.Exists(installer)) throw new ArgumentException($"Installer file '{installer}' does not exist");
 			if (!File.Exists(updateArchiveFileName)) throw new ArgumentException($"Archive file '{updateArchiveFileName}' does not exist");
-			if (!Directory.Exists(destinationDir)) throw new ArgumentException($"Destination directory '{destinationDir}' does not exist");
 			string Quote(string input) => input;
 			var isExe = installer.ExtensionIs(".exe");
 			var arg0 = isExe ? string.Empty : installer;
