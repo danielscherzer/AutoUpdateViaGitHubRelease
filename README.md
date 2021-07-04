@@ -27,7 +27,7 @@ private void Update_PropertyChanged(object? sender, System.ComponentModel.Proper
 	if(update.Available)
 	{
 		var destinationDir = Path.GetDirectory(assembly.Location);
-		update.Install(destinationDir);
+		update.StartInstall(destinationDir);
 		Application.Close();
 	}
 }
@@ -51,8 +51,8 @@ if (updateAvailable)
 	{
 		var installer = Path.Combine(tempDir, UpdateTools.DownloadExtractInstallerToAsync(tempDir).Result);
 		var destinationDir = Path.GetDirectoryName(assembly.Location);
-		UpdateTools.InstallAsync(installer, updateArchive, destinationDir); // don't wait for install to finish!
-		//your application should close right after starting install
+		UpdateTools.StartInstall(installer, updateArchive, destinationDir); // don't wait for install process to finish in windows! The applications needs to be closed befroe it can be updated.
+		// Your application should close right after starting install
 		Environment.Exit(0);
 	}
 }
