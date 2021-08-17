@@ -80,6 +80,7 @@ namespace AutoUpdateViaGitHubRelease.Tests
 			var installProcess = UpdateTools.StartInstall(installerName, updateArchiveFileName, installDir);
 			installProcess.WaitForExit();
 			Assert.AreEqual(0, installProcess.ExitCode);
+			Assert.IsTrue(Directory.Exists(installDir));
 
 			Directory.Delete(tempDir, true);
 		}
