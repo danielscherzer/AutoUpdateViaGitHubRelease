@@ -22,14 +22,17 @@ namespace AutoUpdateViaGitHubRelease
 		public async Task<bool> CheckDownloadNewVersionAsync(string user, string repository
 			, Version currentVersion, string tempDir)
 		{
-			Directory.CreateDirectory(tempDir);
-			updateArchiveFileName = Path.Combine(tempDir, "update.zip");
-			Available = await UpdateTools.CheckDownloadNewVersionAsync(
-				user, repository, currentVersion, updateArchiveFileName);
+			return await Task.Run(async () =>
+			{
+				Directory.CreateDirectory(tempDir);
+				updateArchiveFileName = Path.Combine(tempDir, "update.zip");
+				Available = await UpdateTools.CheckDownloadNewVersionAsync(
+					user, repository, currentVersion, updateArchiveFileName);
 
-			installerName = await UpdateTools.DownloadExtractInstallerToAsync(tempDir);
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Available)));
+				installerName = await UpdateTools.DownloadExtractInstallerToAsync(tempDir);
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Available)));
 			return Available;
+			});
 		}
 
 		/// <summary>

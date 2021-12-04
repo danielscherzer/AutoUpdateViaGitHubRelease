@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Installer
 {
-	class Install
+	internal class Install
 	{
 		private readonly Logger logger;
 

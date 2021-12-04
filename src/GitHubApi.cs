@@ -29,7 +29,7 @@ namespace AutoUpdateViaGitHubRelease
 		/// <param name="url">The url to donload.</param>
 		/// <param name="destinationFileName">The destination file name.</param>
 		/// <returns><see cref="Task"/></returns>
-		public async Task DownloadFile(string url, string destinationFileName)
+		public async Task DownloadFileAsync(string url, string destinationFileName)
 		{
 			using (var stream = await client.GetStreamAsync(url))
 			{
@@ -45,24 +45,21 @@ namespace AutoUpdateViaGitHubRelease
 		/// </summary>
 		/// <param name="json">JSON of the rest response.</param>
 		/// <returns>A download URL.</returns>
-		public static string ParseDownloadUrl(JObject json)
-			=> json["assets"][0]["browser_download_url"].ToObject<string>();
+		public static string ParseDownloadUrl(JObject json) => json["assets"][0]["browser_download_url"].ToObject<string>();
 
 		/// <summary>
 		/// Returns the version of the artifact described in the rest response. 
 		/// </summary>
 		/// <param name="json"></param>
 		/// <returns><see cref="Version"/></returns>
-		public static Version ParseVersion(JObject json)
-			=> new Version(json["name"].ToObject<string>());
+		public static Version ParseVersion(JObject json) => new Version(json["name"].ToObject<string>());
 
 		/// <summary>
 		/// Returns the JSON rest respones for the given github directory
 		/// </summary>
 		/// <param name="gitHubDirectory">the github directory to query</param>
 		/// <returns></returns>
-		public async Task<JObject> GetJSONAsync(string gitHubDirectory)
-			=> JObject.Parse(await client.GetStringAsync($"https://api.github.com/{gitHubDirectory}"));
+		public async Task<JObject> GetJSONAsync(string gitHubDirectory) => JObject.Parse(await client.GetStringAsync($"https://api.github.com/{gitHubDirectory}"));
 
 		/// <summary>
 		/// Returns the JSON of the latest release.
@@ -70,8 +67,7 @@ namespace AutoUpdateViaGitHubRelease
 		/// <param name="user">Th github user.</param>
 		/// <param name="repository">The github repository.</param>
 		/// <returns></returns>
-		public async Task<JObject> GetLatestReleaseJSONAsync(string user, string repository)
-			=> await GetJSONAsync($"repos/{user}/{repository}/releases/latest");
+		public async Task<JObject> GetLatestReleaseJSONAsync(string user, string repository) => await GetJSONAsync($"repos/{user}/{repository}/releases/latest");
 
 
 		private readonly HttpClient client = new HttpClient();

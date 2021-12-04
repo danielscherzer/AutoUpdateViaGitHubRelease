@@ -35,27 +35,30 @@ namespace AutoUpdateViaGitHubRelease
 		/// <returns><see langword="true"/> if a new version is available, otherwise <see langword="false"/></returns>
 		public static async Task<bool> CheckDownloadNewVersionAsync(string user, string repository, Version currentVersion, string destinationFile, Logger logger = null)
 		{
-			if (logger is null) logger = new Logger(Path.ChangeExtension(destinationFile, ".log"));
-			var gitHub = new GitHubApi();
-			try
+			return await Task.Run(async () =>
 			{
-				var latestReleaseJson = await gitHub.GetLatestReleaseJSONAsync(user, repository);
-				var version = GitHubApi.ParseVersion(latestReleaseJson);
-				logger.Log($"Comparing {currentVersion} with latest version on github {version}");
-				if (version > currentVersion)
+				if (logger is null) logger = new Logger(Path.ChangeExtension(destinationFile, ".log"));
+				var gitHub = new GitHubApi();
+				try
 				{
-					var updateUrl = GitHubApi.ParseDownloadUrl(latestReleaseJson);
-					//new version download
-					await gitHub.DownloadFile(updateUrl, destinationFile);
-					return true;
+					var latestReleaseJson = await gitHub.GetLatestReleaseJSONAsync(user, repository);
+					var version = GitHubApi.ParseVersion(latestReleaseJson);
+					logger.Log($"Comparing {currentVersion} with latest version on github {version}");
+					if (version > currentVersion)
+					{
+						var updateUrl = GitHubApi.ParseDownloadUrl(latestReleaseJson);
+						//new version download
+						await gitHub.DownloadFileAsync(updateUrl, destinationFile);
+						return true;
+					}
+					return false;
 				}
-				return false;
-			}
-			catch (Exception e)
-			{
-				logger.Log(e.Message);
-				return false;
-			}
+				catch (Exception e)
+				{
+					logger.Log(e.Message);
+					return false;
+				}
+			});
 		}
 
 		/// <summary>
@@ -65,17 +68,20 @@ namespace AutoUpdateViaGitHubRelease
 		/// <returns>The name of the installer, if all was successfull.</returns>
 		public static async Task<string> DownloadExtractInstallerToAsync(string destinationDir)
 		{
-			var gitHub = new GitHubApi();
-			try
+			return await Task.Run(async () =>
 			{
-				var installerZip = await gitHub.DownloadInstallerAsync(destinationDir);
-				var installerName = installerZip.ExtractInstaller(destinationDir);
-				return installerName;
-			}
-			catch
-			{
-				return string.Empty;
-			}
+				var gitHub = new GitHubApi();
+				try
+				{
+					var installerZip = await gitHub.DownloadInstallerAsync(destinationDir);
+					var installerName = installerZip.ExtractInstaller(destinationDir);
+					return installerName;
+				}
+				catch
+				{
+					return string.Empty;
+				}
+			});
 		}
 
 		/// <summary>
@@ -117,7 +123,7 @@ namespace AutoUpdateViaGitHubRelease
 			var latestReleaseJson = await gitHub.GetLatestReleaseJSONAsync(user, repo);
 			var urlInstaller = GitHubApi.ParseDownloadUrl(latestReleaseJson);
 			var installerFileName = Path.Combine(destination, Path.GetFileName(urlInstaller));
-			await gitHub.DownloadFile(urlInstaller, installerFileName);
+			await gitHub.DownloadFileAsync(urlInstaller, installerFileName);
 			return installerFileName;
 		}
 

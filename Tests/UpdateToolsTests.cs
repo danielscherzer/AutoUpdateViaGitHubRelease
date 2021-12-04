@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -14,10 +15,12 @@ namespace AutoUpdateViaGitHubRelease.Tests
 		{
 			string tempDir = TempDir();
 			Directory.CreateDirectory(tempDir);
-			string installerName = UpdateTools.DownloadExtractInstallerToAsync(tempDir).Result;
-			var ext = Path.GetExtension(installerName).ToLowerInvariant();
+			Stopwatch time = Stopwatch.StartNew();
+			var installerName = UpdateTools.DownloadExtractInstallerToAsync(tempDir);
+			Assert.IsTrue(1 >= time.ElapsedMilliseconds);
+			var ext = Path.GetExtension(installerName.Result).ToLowerInvariant();
 			Assert.IsTrue(ext == ".dll" || ext == ".exe");
-			Assert.IsTrue(File.Exists(installerName));
+			Assert.IsTrue(File.Exists(installerName.Result));
 			Directory.Delete(tempDir, true);
 		}
 
@@ -27,8 +30,10 @@ namespace AutoUpdateViaGitHubRelease.Tests
 			string tempDir = TempDir();
 			Directory.CreateDirectory(tempDir);
 			var destFile = Path.Combine(tempDir, "Update.zip");
-			var downloadOk = UpdateTools.CheckDownloadNewVersionAsync(GitHubApiTest.User, GitHubApiTest.Repo, new System.Version(999, 0), destFile).Result;
-			Assert.IsFalse(downloadOk);
+			Stopwatch time = Stopwatch.StartNew();
+			var downloadOk = UpdateTools.CheckDownloadNewVersionAsync(GitHubApiTest.User, GitHubApiTest.Repo, new System.Version(999, 0), destFile);
+			Assert.IsTrue(1 >= time.ElapsedMilliseconds);
+			Assert.IsFalse(downloadOk.Result);
 			Assert.IsFalse(File.Exists(destFile));
 			Directory.Delete(tempDir, true);
 		}
@@ -39,9 +44,11 @@ namespace AutoUpdateViaGitHubRelease.Tests
 			string tempDir = TempDir();
 			Directory.CreateDirectory(tempDir);
 			var destFile = Path.Combine(tempDir, "Update.zip");
+			Stopwatch time = Stopwatch.StartNew();
 			var downloadOk = UpdateTools.CheckDownloadNewVersionAsync(GitHubApiTest.User
-				, "VersionedBackup", new System.Version(0, 1), destFile).Result;
-			Assert.IsTrue(downloadOk);
+				, "VersionedBackup", new System.Version(0, 1), destFile);
+			Assert.IsTrue(1 >= time.ElapsedMilliseconds);
+			Assert.IsTrue(downloadOk.Result);
 			Assert.IsTrue(File.Exists(destFile));
 			Directory.Delete(tempDir, true);
 		}

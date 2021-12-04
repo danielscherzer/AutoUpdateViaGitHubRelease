@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -12,20 +13,21 @@ namespace AutoUpdateViaGitHubRelease.Tests
 		{
 			var update = new Update();
 			update.PropertyChanged += Update_PropertyChanged;
-			Assert.IsFalse(update.Available);
 			var assembly = Assembly.GetExecutingAssembly();
 			var version = assembly.GetName().Version;
 			var tempDir = Path.Combine(Path.GetTempPath(), nameof(AutoUpdateViaGitHubRelease));
-			var result = update.CheckDownloadNewVersionAsync(GitHubApiTest.User
-				, GitHubApiTest.Repo, version, tempDir).Result;
+			Stopwatch time = Stopwatch.StartNew();
+			var newVersion = update.CheckDownloadNewVersionAsync(GitHubApiTest.User
+				, GitHubApiTest.Repo, version, tempDir);
+			Assert.IsFalse(update.Available);
 
 			var gitHub = new GitHubApi();
 			var latestReleaseJson = gitHub.GetLatestReleaseJSONAsync(GitHubApiTest.User
 				, GitHubApiTest.Repo).Result;
 			var latestVersion = GitHubApi.ParseVersion(latestReleaseJson);
 
+			Assert.AreEqual(newVersion.Result, update.Available);
 			Assert.AreEqual(update.Available, version < latestVersion);
-			Assert.AreEqual(result, update.Available);
 			if (update.Available)
 			{
 				var destinationDir = Path.Combine(tempDir, "install");

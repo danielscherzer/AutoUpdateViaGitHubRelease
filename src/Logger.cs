@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace AutoUpdateViaGitHubRelease
@@ -41,7 +42,7 @@ namespace AutoUpdateViaGitHubRelease
 			var time = DateTime.Now.ToString();
 			var entry = $"{time}: {message}{Environment.NewLine}";
 			File.AppendAllText(LogFileName, entry);
-			Console.WriteLine(entry);
+			Trace.WriteLine(entry);
 		}
 	}
 }
