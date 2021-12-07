@@ -31,7 +31,7 @@ namespace AutoUpdateViaGitHubRelease
 
 				installerName = await UpdateTools.DownloadExtractInstallerToAsync(tempDir);
 				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Available)));
-			return Available;
+				return Available;
 			});
 		}
 
