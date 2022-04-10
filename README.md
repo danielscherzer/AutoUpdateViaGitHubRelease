@@ -41,6 +41,7 @@ var assembly = Assembly.GetExecutingAssembly();
 var tempDir = Path.Combine(Path.GetTempPath(), nameof(ApplicationName));
 Directory.CreateDirectory(tempDir);
 var updateArchive = Path.Combine(tempDir, "update.zip");
+var version = assembly.GetName().Version;
 var updateTask = UpdateTools.CheckDownloadNewVersionAsync(GitHubUser, GitHubRepo, assembly.GetName().Version, updateArchive);
 ... // application code
 var updateAvailable = updateTask.Result;
@@ -51,7 +52,7 @@ if (updateAvailable)
 	{
 		var installer = Path.Combine(tempDir, UpdateTools.DownloadExtractInstallerToAsync(tempDir).Result);
 		var destinationDir = Path.GetDirectoryName(assembly.Location);
-		UpdateTools.StartInstall(installer, updateArchive, destinationDir); // don't wait for install process to finish in windows! The applications needs to be closed befroe it can be updated.
+		UpdateTools.StartInstall(installer, updateArchive, destinationDir); // don't wait for install process to finish in windows! The applications needs to be closed before it can be updated.
 		// Your application should close right after starting install
 		Environment.Exit(0);
 	}
@@ -66,6 +67,16 @@ See the [change log](CHANGELOG.md) for changes and road map.
 
 - Check if a newer version is available
 - Run update (you will need to close your application to allow overwriting your application files)
+
+## Projects using this
+- Command line
+  - [Versioned Copy](https://github.com/danielscherzer/VersionedCopy)
+- WinForm
+  - [Shader Form](https://github.com/danielscherzer/ShaderForm)
+- WPF
+  - [Shader Form 2](https://github.com/danielscherzer/ShaderForm2)
+  - [Batch Renamer](https://github.com/danielscherzer/BatchRenamer)
+  - [Batch Execute](https://github.com/danielscherzer/BatchExecute)
 
 ## Errors and questions
 Please us the GitHub [Issue function](https://github.com/danielscherzer/AutoUpdateViaGitHubRelease/issues/new) to report errors or ask questions.
