@@ -8,7 +8,7 @@
 This is a .net standard class library that allows application to update themselves. The main goal of this project is to create a library that supports creating self-updating applications. This library will make this process straight-forward.
 
 ## Assumptions
-- The latest version of your application is deployed as a GitHub release.
+- The latest version of your application is deployed as a single ZIP file as a GitHub release.
 
 ## Usage
 1. You can use the `Update` class if you need `INotifyPropertyChanged`:
@@ -71,8 +71,6 @@ See the [change log](CHANGELOG.md) for changes and road map.
 ## Projects using this
 - Command line
   - [Versioned Copy](https://github.com/danielscherzer/VersionedCopy)
-- WinForm
-  - [Shader Form](https://github.com/danielscherzer/ShaderForm)
 - WPF
   - [Shader Form 2](https://github.com/danielscherzer/ShaderForm2)
   - [Batch Renamer](https://github.com/danielscherzer/BatchRenamer)
