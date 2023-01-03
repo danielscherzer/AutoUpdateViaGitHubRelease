@@ -27,7 +27,7 @@ build:
   verbosity: minimal              # MSBuild verbosity level
 
 artifacts:
-- path: Installer\bin\$(configuration)\net5.0
+- path: Installer\bin\$(configuration)
   name: Installer
   type: zip
 
