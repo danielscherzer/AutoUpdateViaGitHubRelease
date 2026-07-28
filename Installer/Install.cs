@@ -28,7 +28,8 @@ internal class Install(Logger logger)
 				{
 					string destinationFile = FullFileName(applicationDir, entry.FullName);
 					Directory.CreateDirectory(Path.GetDirectoryName(destinationFile));
-					TryDeleteWait(destinationFile);
+					if(File.Exists(destinationFile)) TryDeleteWait(destinationFile);
+					if (Directory.Exists(destinationFile)) continue;
 					Log($"Creating new {destinationFile}");
 					try
 					{
